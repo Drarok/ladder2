@@ -1,0 +1,19 @@
+{
+    "name": "drarok/ladder2",
+    "description": "A database migration tool, written in PHP.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mat Gadd",
+            "email": "mat@zerifas.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ladder\\": "src/Ladder/"
+        }
+    },
+    "require": {
+        "symfony/console": "2.4.*"
+    }
+}
