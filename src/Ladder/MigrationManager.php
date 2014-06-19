@@ -12,6 +12,13 @@ class MigrationManager
     protected $container;
 
     /**
+     * Array of paths to get migrations from.
+     *
+     * @var array
+     */
+    protected $paths = [];
+
+    /**
      * Migration groups handled by this instance.
      *
      * @var array
@@ -26,6 +33,28 @@ class MigrationManager
     public function __get($key)
     {
         return $this->container[$key];
+    }
+
+    /**
+     * Add a namespace/path pair.
+     *
+     * @param string $namespace Namespace of the migrations contained in $path.
+     * @param string $path      Path to the files.
+     *
+     * @return $this
+     */
+    public function addNamespace($namespace, $path)
+    {
+        if (array_key_exists($namespace, $this->paths)) {
+            throw new \InvalidArgumentException(sprintf(
+                'Namespace \'%s\' is already registered.',
+                $namespace
+            ));
+        }
+
+        $this->paths[$namespace] = $path;
+
+        return $this;
     }
 
     /**
@@ -59,43 +88,48 @@ class MigrationManager
     }
 
     /**
-     * Get all migrations, keyed on the id, value is the file path.
+     * Get all migrations, keyed on the id, value is full class name including namespace.
      *
      * @return array
      */
     public function getAllMigrations()
     {
-        $path = $this->config['migrations']['path'];
-
-        if (! $path) {
-            throw new \InvalidArgumentException('Invalid migrations path.');
-        }
-
-        // Convert relative paths into absolute.
-        if ($path[0] != '/' && $path[0] != '\\') {
-            $path = Path::join($this->rootPath, $path);
-        }
-
-        if (! is_dir($path)) {
-            throw new \InvalidArgumentException('Invalid migrations path: ' . $path);
-        }
-
         $result = [];
 
-        $dir = new \DirectoryIterator($path);
-        foreach ($dir as $fileInfo) {
-            if ($dir->isDot()) {
-                continue;
+        foreach ($this->paths as $namespace => $path) {
+
+            if (! $path) {
+                throw new \InvalidArgumentException('Invalid migrations path.');
             }
 
-            if ($fileInfo->getExtension() != 'php') {
-                continue;
+            // Convert relative paths into absolute.
+            if ($path[0] != '/' && $path[0] != '\\') {
+                $path = Path::join($this->rootPath, $path);
             }
 
-            $id = intval(substr($fileInfo->getBasename('.php'), 9));
+            if (! is_dir($path)) {
+                throw new \InvalidArgumentException('Invalid migrations path: ' . $path);
+            }
 
-            $result[$id] = $fileInfo->getPathname();
+            $dir = new \DirectoryIterator($path);
+            foreach ($dir as $fileInfo) {
+                if ($dir->isDot()) {
+                    continue;
+                }
+
+                if (! fnmatch('Migration*.php', $fileInfo->getFilename())) {
+                    continue;
+                }
+
+                $class = $fileInfo->getBasename('.php');
+
+                $id = intval(substr($class, 9));
+
+                $result[$id] = $namespace . '\\' . $class;
+            }
         }
+
+        ksort($result);
 
         return $result;
     }
@@ -163,9 +197,7 @@ class MigrationManager
 
     protected function createInstance($id)
     {
-        $pathname = $this->getAllMigrations()[$id];
-        $class = $this->config['migrations']['namespace'] . '\\Migration' . $id;
-        require_once $pathname;
+        $class = $this->getAllMigrations()[$id];
         return new $class($this->container);
     }
 
