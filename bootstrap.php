@@ -29,14 +29,27 @@ $container['db'] = function ($container) {
 };
 
 $container['migrationManager'] = function ($container) {
-    return new Ladder\MigrationManager($container);
+    $manager = new MigrationManager($container);
+
+    // Always add in the Ladder migrations path.
+    $manager->addNamespace(
+        'Ladder\\Migration',
+        Path::join($container['rootPath'], 'src/Ladder/Migration')
+    );
+
+    // Loop over configured namespaces and add those.
+    foreach ($container['config']['migrations'] as $migrations) {
+        $manager->addNamespace($migrations['namespace'], $migrations['path']);
+    }
+
+    return $manager;
 };
 
 $container['app'] = function ($container) {
-    $app = new Symfony\Component\Console\Application('Ladder2', Ladder\Version::getVersion());
+    $app = new Application('Ladder2', Version::getVersion());
 
     $app->addCommands([
-        new Ladder\Command\LadderCommand($container),
+        new Command\LadderCommand($container),
     ]);
 
     return $app;
