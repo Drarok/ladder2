@@ -1,26 +1,16 @@
 <?php
 
+namespace Ladder;
+
+use PDO;
+use Pimple;
+use Symfony\Component\Console\Application;
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 $container = new Pimple();
 
-$container['config'] = function ($container) {
-    return [
-        'db' => [
-            'dsn'      => 'mysql:host=localhost;dbname=test;charset=utf8;',
-            'username' => 'root',
-            'password' => '',
-        ],
-        'migrations' => [
-            'namespace' => 'Application\\Migration',
-            'path'      => 'migrations',
-        ],
-    ];
-};
-
-$container['rootPath'] = function ($container) {
-    return __DIR__;
-};
+$container['rootPath'] = __DIR__;
 
 $container['db'] = function ($container) {
     $config = $container['config']['db'];
