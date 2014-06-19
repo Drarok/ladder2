@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Migration;
+namespace Ladder\Migration;
 
 use Ladder\Migration\AbstractMigration;
 
