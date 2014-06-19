@@ -32,6 +32,13 @@ class LadderCommand extends Command
     {
         $manager = $this->migrationManager;
 
+        $availableMigrations = $manager->getAvailableMigrations();
+
+        if (! count($availableMigrations)) {
+            $output->writeln('<info>Already up-to-date.</info>');
+            return;
+        }
+
         $source = $manager->getCurrentMigration();
         $destination = $input->getArgument('migration');
 
@@ -41,9 +48,22 @@ class LadderCommand extends Command
             $destination
         ));
 
-        $migrations = $manager->getAvailableMigrations();
-        foreach ($migrations as $id => $pathname) {
-            $manager->applyMigration($id);
+        foreach ($availableMigrations as $id => $class) {
+            $output->write(sprintf(
+                '<info>Applying <comment>%s</comment>: </info>',
+                $class
+            ));
+
+            try {
+                $manager->applyMigration($id);
+                $output->writeln('<info>OK</info>');
+            } catch (\Exception $e) {
+                $output->writeln(sprintf(
+                    '<error>Error: %s. Aborted.</error>',
+                    $e->getMessage()
+                ));
+                break;
+            }
         }
     }
 }
