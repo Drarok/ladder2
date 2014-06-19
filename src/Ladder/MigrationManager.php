@@ -136,10 +136,6 @@ class MigrationManager
 
     public function applyMigration($id)
     {
-        if (! $this->hasMigrationsTable()) {
-            $this->createMigrationsTable();
-        }
-
         $instance = $this->createInstance($id);
 
         try {
@@ -180,17 +176,5 @@ class MigrationManager
         );
 
         return ($stmt->fetchColumn() !== false);
-    }
-
-    protected function createMigrationsTable()
-    {
-        // TODO: This might work better as a system migration or something?
-        $this->db->query(
-            'CREATE TABLE `ladder:migrations` (
-                `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                `applied` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                `data` TEXT NULL
-            )'
-        );
     }
 }
