@@ -40,5 +40,10 @@ class LadderCommand extends Command
             var_export($source, true),
             $destination
         ));
+
+        $migrations = $manager->getAvailableMigrations();
+        foreach ($migrations as $id => $pathname) {
+            $manager->applyMigration($id);
+        }
     }
 }
