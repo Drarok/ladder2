@@ -1,0 +1,13 @@
+{
+    "db": {
+        "dsn": "mysql:host=localhost;dbname=test;charset=utf8;",
+        "username": "root",
+        "password": ""
+    },
+    "migrations": [
+        {
+            "namespace": "Application\\Migration",
+            "path":      "app/src/Application/Migration"
+        }
+    ]
+}
