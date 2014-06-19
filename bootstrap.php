@@ -5,15 +5,26 @@ require_once __DIR__ . '/vendor/autoload.php';
 $container = new Pimple();
 
 $container['config'] = function ($container) {
-    return array(
-        'dsn'      => 'mysql:host=localhost;dbname=test;charset=utf8;',
-        'username' => 'root',
-        'password' => '',
-    );
+    return [
+        'db' => [
+            'dsn'      => 'mysql:host=localhost;dbname=test;charset=utf8;',
+            'username' => 'root',
+            'password' => '',
+        ],
+        'migrations' => [
+            'namespace' => 'Application\\Migration',
+            'path'      => 'migrations',
+        ],
+    ];
+};
+
+$container['rootPath'] = function ($container) {
+    return __DIR__;
 };
 
 $container['db'] = function ($container) {
-    $config = $container['config'];
+    $config = $container['config']['db'];
+
     return new PDO(
         $config['dsn'],
         $config['username'],
