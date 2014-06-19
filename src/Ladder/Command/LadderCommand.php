@@ -30,6 +30,15 @@ class LadderCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('<info>Let\'s rock this!</info>');
+        $manager = $this->migrationManager;
+
+        $source = $manager->getCurrentMigration();
+        $destination = $input->getArgument('migration');
+
+        $output->writeln(sprintf(
+            '<info>Migrate from <comment>%s</comment> to <comment>%s</comment></info>',
+            var_export($source, true),
+            $destination
+        ));
     }
 }
