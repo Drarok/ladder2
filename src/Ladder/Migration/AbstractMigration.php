@@ -13,9 +13,11 @@ abstract class AbstractMigration
      */
     protected $container;
 
+    abstract public function getName();
+
     abstract public function apply();
 
-    abstract public function rollback();
+    abstract public function rollback(array $data = null);
 
     public function __construct(Pimple $container)
     {
