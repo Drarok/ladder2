@@ -51,9 +51,27 @@ class Table
         return $this;
     }
 
+    public function alterColumn($name, $type, array $options = [])
+    {
+        $this->columns['alter'][$name] = new Column($name, $type, $options);
+        return $this;
+    }
+
+    public function dropColumn($name)
+    {
+        $this->columns['drop'][$name] = new Column($name, 'DROP_COLUMN');
+        return $this;
+    }
+
     public function addIndex($name, array $columns)
     {
         $this->indexes['add'][$name] = new Index($name, $columns);
+        return $this;
+    }
+
+    public function dropIndex($name)
+    {
+        $this->indexes['drop'][$name] = new Index($name, []);
         return $this;
     }
 
@@ -61,26 +79,47 @@ class Table
     {
         $elements = [];
 
-        foreach ($this->columns['add'] as $name => $column) {
-            $elements[] = trim(sprintf(
-                '`%s` %s %s',
-                $name,
-                $column->getSQLType(),
-                $column->getSQLOptions()
-            ));
+        foreach ($this->columns['add'] as $column) {
+            $elements[] = $column->getCreateSQL();
         }
 
-        foreach ($this->indexes['add'] as $name => $index) {
-            $elements[] = $index->getSQL();
+        foreach ($this->indexes['add'] as $index) {
+            $elements[] = $index->getCreateSQL();
         }
 
-        $sql = sprintf(
+        $this->db->query(sprintf(
             'CREATE TABLE `%s` (%s)',
             $this->name,
             PHP_EOL . implode(',' . PHP_EOL, $elements) . PHP_EOL
-        );
+        ));
+    }
 
-        $this->db->query($sql);
+    public function alter()
+    {
+        $elements = [];
+
+        foreach ($this->columns['drop'] as $column) {
+            $elements[] = $column->getDropSQL();
+        }
+
+        foreach ($this->columns['alter'] as $column) {
+            $elements[] = $column->getAlterSQL();
+        }
+
+        foreach ($this->columns['add'] as $column) {
+            $elements[] = $column->getAddSQL();
+        }
+
+        try {
+            $this->db->query($sql = sprintf(
+                "ALTER TABLE `%s`\n    %s",
+                $this->name,
+                implode(',' . PHP_EOL . '    ', $elements)
+            ));
+        } catch (\Exception $e) {
+            echo $sql, PHP_EOL;
+            throw $e;
+        }
     }
 
     public function drop()
