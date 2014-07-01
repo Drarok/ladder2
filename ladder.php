@@ -12,4 +12,4 @@ if (! is_file($configPathname)) {
 
 $container['config'] = json_decode(file_get_contents($configPathname), true);
 
-$container['app']->run();
+exit($container['app']->run());
