@@ -6,6 +6,11 @@ use Ladder\Migration\AbstractMigration;
 
 class Migration1 extends AbstractMigration
 {
+    public function getName()
+    {
+        return 'Migrations tables';
+    }
+
     public function apply()
     {
         $this->db->query(
@@ -17,7 +22,7 @@ class Migration1 extends AbstractMigration
         );
     }
 
-    public function rollback()
+    public function rollback(array $data = null)
     {
         $this->db->query(
             'DROP TABLE `ladder:migrations`'
