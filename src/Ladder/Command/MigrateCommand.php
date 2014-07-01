@@ -2,6 +2,7 @@
 
 namespace Ladder\Command;
 
+use Ladder\MigrationManager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -32,15 +33,35 @@ class MigrateCommand extends AbstractCommand
     {
         $manager = $this->migrationManager;
 
+        $source = $manager->getCurrentMigration();
+        $destination = $input->getArgument('migration');
+
+        if ($destination < $source) {
+            if (! $input->getOption('rollback')) {
+                throw new \InvalidArgumentException(sprintf(
+                    'Refusing to roll back from %d to %d without --rollback option for safety.',
+                    $source,
+                    $destination
+                ));
+            }
+
+            $method = 'rollback';
+        } else {
+            $method = 'apply';
+        }
+
+        $this->$method($output, $manager, $source, $destination);
+    }
+
+    protected function apply(OutputInterface $output, MigrationManager $manager, $source, $destination)
+    {
+
         $availableMigrations = $manager->getAvailableMigrations();
 
         if (! count($availableMigrations)) {
             $output->writeln('<info>Already up-to-date.</info>');
             return;
         }
-
-        $source = $manager->getCurrentMigration();
-        $destination = $input->getArgument('migration');
 
         $output->writeln(sprintf(
             '<info>Migrate from <comment>%s</comment> to <comment>%s</comment></info>',
@@ -56,6 +77,41 @@ class MigrateCommand extends AbstractCommand
 
             try {
                 $manager->applyMigration($id);
+                $output->writeln('<info>OK</info>');
+            } catch (\Exception $e) {
+                $output->writeln(sprintf(
+                    '<error>Error: %s. Aborted.</error>',
+                    $e->getMessage()
+                ));
+                break;
+            }
+        }
+    }
+
+    protected function rollback(OutputInterface $output, MigrationManager $manager, $source, $destination)
+    {
+        $appliedMigrations = $manager->getAppliedMigrations();
+        krsort($appliedMigrations);
+
+        if (! count($appliedMigrations)) {
+            $output->writeln('<info>Already up-to-date.</info>');
+            return;
+        }
+
+        $output->writeln(sprintf(
+            '<info>Rollback from <comment>%s</comment> to <comment>%s</comment></info>',
+            var_export($source, true),
+            $destination
+        ));
+
+        foreach ($appliedMigrations as $id => $class) {
+            $output->write(sprintf(
+                '<info>Rolling back <comment>%s</comment>: </info>',
+                $class
+            ));
+
+            try {
+                $manager->rollbackMigration($id);
                 $output->writeln('<info>OK</info>');
             } catch (\Exception $e) {
                 $output->writeln(sprintf(
