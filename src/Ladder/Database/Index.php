@@ -38,4 +38,18 @@ class Index
 
         return $sql;
     }
+
+    public function getAddSQL()
+    {
+        return 'ADD ' . $this->getCreateSQL();
+    }
+
+    public function getDropSQL()
+    {
+        if ($this->name === 'PRIMARY') {
+            return 'DROP PRIMARY KEY';
+        } else {
+            return sprintf('DROP KEY `%s`', $this->name);
+        }
+    }
 }
