@@ -8,7 +8,7 @@ class Migration1 extends AbstractMigration
 {
     public function getName()
     {
-        return 'Migrations tables';
+        return 'Ladder internal tables';
     }
 
     public function apply()
