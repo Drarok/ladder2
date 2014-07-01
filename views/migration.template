@@ -2,6 +2,7 @@
 
 namespace {{ namespace }};
 
+use Ladder\Database\Table;
 use Ladder\Migration\AbstractMigration;
 
 class Migration{{ id }} extends AbstractMigration
@@ -13,9 +14,17 @@ class Migration{{ id }} extends AbstractMigration
 
     public function apply()
     {
+        Table::factory('{{ table }}')
+            ->addColumn('id', 'autoincrement', ['null' => false, 'unsigned' => true])
+            ->addIndex('PRIMARY', ['id'])
+            ->create()
+        ;
     }
 
     public function rollback(array $data = null)
     {
+        Table::factory('{{ table }}')
+            ->drop()
+        ;
     }
 }
