@@ -49,6 +49,7 @@ $container['app'] = function ($container) {
     $app = new Application('Ladder2', Version::getVersion());
 
     $app->addCommands([
+        new Command\StatusCommand($container),
         new Command\MigrateCommand($container),
     ]);
 
