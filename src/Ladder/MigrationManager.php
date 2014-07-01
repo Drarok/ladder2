@@ -106,7 +106,7 @@ class MigrationManager
 
             // Convert relative paths into absolute.
             if ($path[0] != '/' && $path[0] != '\\') {
-                $path = Path::join($this->rootPath, $path);
+                $path = Path::join(getcwd(), $path);
             }
 
             if (! is_dir($path)) {
