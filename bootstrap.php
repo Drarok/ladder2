@@ -6,7 +6,13 @@ use PDO;
 use Pimple;
 use Symfony\Component\Console\Application;
 
-require_once __DIR__ . '/vendor/autoload.php';
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    // Composer autoload for developing Ladder.
+    require_once __DIR__ . '/vendor/autoload.php';
+} elseif (file_exists(__DIR__ . '/../../autoload.php')) {
+    // Composer autoload for users of Ladder.
+    require_once __DIR__ . '/../../autoload.php';
+}
 
 $container = new Pimple();
 
