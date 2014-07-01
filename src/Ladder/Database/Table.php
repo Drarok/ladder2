@@ -137,17 +137,18 @@ class Table
      *
      * @param string $name    Name of the index.
      * @param array  $columns Optional array of column names.
+     * @param array  $options Optional array of options.
      *
      * @return $this
      */
-    public function addIndex($name, array $columns = null)
+    public function addIndex($name, array $columns = null, array $options = [])
     {
         // If no columns passed in, default to a column matching the index name.
         if ($columns === null) {
             $columns = [$name];
         }
 
-        $this->indexes['add'][$name] = new Index($name, $columns);
+        $this->indexes['add'][$name] = new Index($name, $columns, $options);
         return $this;
     }
 
