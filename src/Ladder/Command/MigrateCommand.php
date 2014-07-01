@@ -2,6 +2,7 @@
 
 namespace Ladder\Command;
 
+use Ladder\Database\Table;
 use Ladder\MigrationManager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,6 +32,8 @@ class MigrateCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        Table::setDefaultDb($this->db);
+
         $manager = $this->migrationManager;
 
         $source = $manager->getCurrentMigration();
@@ -55,7 +58,6 @@ class MigrateCommand extends AbstractCommand
 
     protected function apply(OutputInterface $output, MigrationManager $manager, $source, $destination)
     {
-
         $availableMigrations = $manager->getAvailableMigrations();
 
         if (! count($availableMigrations)) {
