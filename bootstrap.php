@@ -49,7 +49,7 @@ $container['app'] = function ($container) {
     $app = new Application('Ladder2', Version::getVersion());
 
     $app->addCommands([
-        new Command\LadderCommand($container),
+        new Command\MigrateCommand($container),
     ]);
 
     return $app;
