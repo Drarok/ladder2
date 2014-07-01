@@ -2,6 +2,8 @@
 
 namespace Ladder;
 
+use Ladder\Migration\AbstractMigration;
+
 class MigrationManager
 {
     /**
@@ -176,12 +178,10 @@ class MigrationManager
         return $appliedMigrations;
     }
 
-    public function applyMigration($id)
+    public function applyMigration(AbstractMigration $migration)
     {
-        $instance = $this->createInstance($id);
-
         try {
-            $data = $instance->apply();
+            $data = $migration->apply();
         } catch (\Exception $e) {
             // TODO: Tidy up.
             throw $e;
@@ -200,12 +200,12 @@ class MigrationManager
         );
 
         $stmt->execute([
-            'id'   => $id,
+            'id'   => $migration->getId(),
             'data' => json_encode($data),
         ]);
     }
 
-    public function rollbackMigration($id)
+    public function rollbackMigration(AbstractMigration $migration)
     {
         $stmt = $this->db->prepare(
             'SELECT
@@ -219,7 +219,7 @@ class MigrationManager
         );
 
         $stmt->execute([
-            'id' => $id,
+            'id' => $migration->getId(),
         ]);
 
         if ($data = $stmt->fetchColumn()) {
@@ -227,8 +227,7 @@ class MigrationManager
         }
 
         try {
-            $instance = $this->createInstance($id);
-            $instance->rollback($data);
+            $migration->rollback($data);
         } catch (\Exception $e) {
             // TODO: Tidy up.
             throw $e;
@@ -244,12 +243,12 @@ class MigrationManager
             );
 
             $stmt->execute([
-                'id' => $id,
+                'id' => $migration->getId(),
             ]);
         }
     }
 
-    protected function createInstance($id)
+    public function createInstance($id)
     {
         $class = $this->getAllMigrations()[$id];
         return new $class($this->container);

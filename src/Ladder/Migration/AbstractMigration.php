@@ -24,6 +24,13 @@ abstract class AbstractMigration
         $this->container = $container;
     }
 
+    public function getId()
+    {
+        $class = get_class($this);
+        $migrationPos = strrpos($class, 'Migration');
+        return substr($class, $migrationPos + 9);
+    }
+
     public function __get($key)
     {
         return $this->container[$key];
