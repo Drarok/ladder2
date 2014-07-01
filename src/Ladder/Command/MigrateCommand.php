@@ -36,7 +36,7 @@ class MigrateCommand extends AbstractCommand
         $source = $manager->getCurrentMigration();
         $destination = $input->getArgument('migration');
 
-        if ($destination < $source) {
+        if ($destination != 'latest' && $destination < $source) {
             if (! $input->getOption('rollback')) {
                 throw new \InvalidArgumentException(sprintf(
                     'Refusing to roll back from %d to %d without --rollback option for safety.',
