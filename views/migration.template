@@ -1,0 +1,21 @@
+<?php
+
+namespace {{ namespace }};
+
+use Ladder\Migration\AbstractMigration;
+
+class Migration{{ id }} extends AbstractMigration
+{
+    public function getName()
+    {
+        return '{{ name }}';
+    }
+
+    public function apply()
+    {
+    }
+
+    public function rollback(array $data = null)
+    {
+    }
+}
