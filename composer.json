@@ -17,7 +17,7 @@
         "ladder.php"
     ],
     "require": {
-        "pimple/pimple": "2.0.*",
+        "pimple/pimple": "1.*",
         "symfony/console": "2.4.*"
     }
 }
