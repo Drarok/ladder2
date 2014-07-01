@@ -141,9 +141,21 @@ class MigrationManager
      */
     public function getAvailableMigrations()
     {
+        $allMigrations = $this->getAllMigrations();
+
         // Shortcut if there's no migrations table.
         if (! $this->hasMigrationsTable()) {
-            return $this->getAllMigrations();
+            return $allMigrations;
+        }
+
+        $appliedMigrations = $this->getAppliedMigrations();
+        return array_diff($allMigrations, $appliedMigrations);
+    }
+
+    public function getAppliedMigrations()
+    {
+        if (! $this->hasMigrationsTable()) {
+            return [];
         }
 
         $stmt = $this->db->prepare(
@@ -155,17 +167,13 @@ class MigrationManager
 
         $stmt->execute();
 
-        $appliedMigrations = [];
+        $allMigrations = $this->getAllMigrations();
+
         while (($id = $stmt->fetchColumn()) !== false) {
-            $appliedMigrations[$id] = true;
+            $appliedMigrations[$id] = $allMigrations[$id];
         }
 
-        return Arr::filter(
-            $this->getAllMigrations(),
-            function ($id, $path) use ($appliedMigrations) {
-                return ! array_key_exists($id, $appliedMigrations);
-            }
-        );
+        return $appliedMigrations;
     }
 
     public function applyMigration($id)
@@ -173,8 +181,9 @@ class MigrationManager
         $instance = $this->createInstance($id);
 
         try {
-            $instance->apply();
+            $data = $instance->apply();
         } catch (\Exception $e) {
+            // TODO: Tidy up.
             throw $e;
         }
 
@@ -186,13 +195,58 @@ class MigrationManager
                 )
             VALUES (
                 :id,
-                NULL
+                :data
             )'
+        );
+
+        $stmt->execute([
+            'id'   => $id,
+            'data' => json_encode($data),
+        ]);
+    }
+
+    public function rollbackMigration($id)
+    {
+        $stmt = $this->db->prepare(
+            'SELECT
+                `data`
+            FROM
+                `ladder:migrations`
+            WHERE
+                `id` = :id
+            LIMIT
+                1'
         );
 
         $stmt->execute([
             'id' => $id,
         ]);
+
+        if ($data = $stmt->fetchColumn()) {
+            $data = json_decode($data, true);
+        }
+
+        try {
+            $instance = $this->createInstance($id);
+            $instance->rollback($data);
+        } catch (\Exception $e) {
+            // TODO: Tidy up.
+            throw $e;
+        }
+
+        // Only attempt to record the change if the table exists.
+        if ($this->hasMigrationsTable()) {
+            $stmt = $this->db->prepare(
+                'DELETE FROM
+                    `ladder:migrations`
+                WHERE
+                    `id` = :id'
+            );
+
+            $stmt->execute([
+                'id' => $id,
+            ]);
+        }
     }
 
     protected function createInstance($id)
