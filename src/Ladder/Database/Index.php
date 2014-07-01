@@ -16,7 +16,7 @@ class Index
         $this->columns = $columns;
     }
 
-    public function getSQL()
+    public function getCreateSQL()
     {
         $sql = '';
 

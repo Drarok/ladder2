@@ -19,38 +19,70 @@ class Column
         $this->options = $options;
     }
 
-    public function getSQLType()
+    public function getCreateSQL()
+    {
+        return sprintf(
+            '`%s` %s',
+            $this->name,
+            $this->getSQLDefinition()
+        );
+    }
+
+    public function getAddSQL()
+    {
+        return 'ADD COLUMN ' . $this->getCreateSQL();
+    }
+
+    public function getAlterSQL()
+    {
+        $sql = '';
+
+        if ($newName = Arr::get($this->options, 'name')) {
+            return sprintf(
+                'CHANGE COLUMN `%s` `%s` %s',
+                $this->name,
+                $newName,
+                $this->getSQLDefinition()
+            );
+        } else {
+            return 'MODIFY COLUMN ' . $this->getCreateSQL();
+        }
+    }
+
+    public function getDropSQL()
+    {
+        return sprintf('DROP COLUMN `%s`', $this->name);
+    }
+
+    protected function getSQLDefinition()
     {
         if ($this->type == 'autoincrement') {
-            $type = 'INTEGER';
+            $sql = 'INTEGER';
         } else {
-            $type = strtoupper($this->type);
+            $sql = strtoupper($this->type);
         }
 
         if ($limit = Arr::get($this->options, 'limit')) {
-            $type .= '(' . $limit . ')';
+            $sql .= sprintf('(%s)', $limit);
         }
 
-        if ($unsigned = Arr::get($this->options, 'unsigned')) {
-            $type .= ' UNSIGNED';
+        if (Arr::get($this->options, 'unsigned')) {
+            $sql .= ' UNSIGNED';
         }
 
-        if (! ($null = Arr::get($this->options, 'null', true))) {
-            $type .= ' NOT NULL';
+        // Auto-increment is implicity not null under MySQL, we make it explicit.
+        if (! Arr::get($this->options, 'null', true) || $this->type == 'autoincrement') {
+            $sql .= ' NOT NULL';
         }
 
         if ($this->type == 'autoincrement') {
-            if ($null) {
-                $type .= ' NOT NULL';
-            }
-            $type .= ' AUTO_INCREMENT';
+            $sql .= ' AUTO_INCREMENT';
         }
 
-        return $type;
-    }
+        if ($after = Arr::get($this->options, 'after')) {
+            $sql .= sprintf(' AFTER `%s`', $after);
+        }
 
-    public function getSQLOptions()
-    {
-        // TODO: Might not need this?
+        return $sql;
     }
 }
