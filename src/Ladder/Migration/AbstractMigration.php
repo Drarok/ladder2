@@ -13,6 +13,13 @@ abstract class AbstractMigration
      */
     protected $container;
 
+    /**
+     * Cached appliedAt value.
+     *
+     * @var mixed
+     */
+    protected $appliedAt;
+
     abstract public function getName();
 
     abstract public function apply();
@@ -34,5 +41,36 @@ abstract class AbstractMigration
     public function __get($key)
     {
         return $this->container[$key];
+    }
+
+    public function getAppliedAt($flushCache = false)
+    {
+        if ($this->appliedAt === null || $flushCache) {
+            if (! $this->container['migrationManager']->hasMigrationsTable()) {
+                return $this->appliedAt = false;
+            }
+
+            $stmt = $this->db->prepare(
+                'SELECT
+                    appliedAt
+                FROM
+                    `ladder:migrations`
+                WHERE
+                    `id` = :id
+                LIMIT
+                    1'
+            );
+            $stmt->execute([
+                'id' => $this->getId(),
+            ]);
+            $this->appliedAt = $stmt->fetchColumn();
+        }
+
+        return $this->appliedAt;
+    }
+
+    public function isApplied()
+    {
+        return ($this->getAppliedAt() !== false);
     }
 }
