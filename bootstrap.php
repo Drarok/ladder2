@@ -18,7 +18,7 @@ $container = new Pimple();
 
 $container['rootPath'] = __DIR__;
 
-$container['db'] = function ($container) {
+$container['db'] = $container->share(function ($container) {
     $config = $container['config']['db'];
 
     return new PDO(
@@ -32,15 +32,15 @@ $container['db'] = function ($container) {
             PDO::ATTR_STRINGIFY_FETCHES  => false,
         ]
     );
-};
+});
 
-$container['migrationManager'] = function ($container) {
+$container['migrationManager'] = $container->share(function ($container) {
     $manager = new MigrationManager($container);
 
     // Always add in the Ladder migrations path.
     $manager->addNamespace(
-        'Ladder\\Migration',
-        Path::join($container['rootPath'], 'src/Ladder/Migration')
+        'Ladder\\Migration\\System',
+        Path::join($container['rootPath'], 'src/Ladder/Migration/System')
     );
 
     // Loop over configured namespaces and add those.
@@ -49,9 +49,9 @@ $container['migrationManager'] = function ($container) {
     }
 
     return $manager;
-};
+});
 
-$container['app'] = function ($container) {
+$container['app'] = $container->share(function ($container) {
     $app = new Application('Ladder2', Version::getVersion());
 
     $app->addCommands([
@@ -61,6 +61,6 @@ $container['app'] = function ($container) {
     ]);
 
     return $app;
-};
+});
 
 return $container;
