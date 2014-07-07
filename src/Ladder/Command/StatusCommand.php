@@ -27,31 +27,29 @@ class StatusCommand extends AbstractCommand
         $availableMigrations = $manager->getAvailableMigrations();
 
         if (! count($availableMigrations) && ! $verbose) {
-            $output->writeln('<info>Database is up-to-date.</info>');
+            $output->writeln('    <fg=green>Database is up-to-date.</fg=green>');
             return;
         }
 
         if ($verbose) {
             $allMigrations = $manager->getAllMigrations();
 
-            foreach ($allMigrations as $id => $class) {
-                $instance = $manager->createInstance($id);
+            foreach ($allMigrations as $id => $migration) {
                 $missing = array_key_exists($id, $availableMigrations);
 
                 $output->writeln(sprintf(
                     '    %2$d: <fg=%1$s>%3$s</fg=%1$s>',
                     $missing ? 'red' : 'green',
                     $id,
-                    $instance->getName()
+                    $migration->getName()
                 ));
             }
         } else {
-            foreach ($availableMigrations as $id => $class) {
-                $instance = $manager->createInstance($id);
+            foreach ($availableMigrations as $id => $migration) {
                 $output->writeln(sprintf(
                     '    %d: <fg=red>%s</fg=red>',
                     $id,
-                    $instance->getName()
+                    $migration->getName()
                 ));
             }
         }

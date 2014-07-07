@@ -90,7 +90,7 @@ class MigrationManager
     }
 
     /**
-     * Get all migrations, keyed on the id, value is full class name including namespace.
+     * Get an array of migrations, keyed on the id.
      *
      * @return array
      */
@@ -123,11 +123,9 @@ class MigrationManager
                     continue;
                 }
 
-                $class = $fileInfo->getBasename('.php');
-
-                $id = intval(substr($class, 9));
-
-                $result[$id] = $namespace . '\\' . $class;
+                $class = $namespace . '\\' . $fileInfo->getBasename('.php');
+                $migration = new $class($this->container);
+                $result[$migration->getId()] = $migration;
             }
         }
 
@@ -150,8 +148,12 @@ class MigrationManager
             return $allMigrations;
         }
 
-        $appliedMigrations = $this->getAppliedMigrations();
-        return array_diff($allMigrations, $appliedMigrations);
+        return array_filter(
+            $allMigrations,
+            function ($migration) {
+                return ! $migration->isApplied();
+            }
+        );
     }
 
     public function getAppliedMigrations()
@@ -160,22 +162,14 @@ class MigrationManager
             return [];
         }
 
-        $stmt = $this->db->prepare(
-            'SELECT
-                id
-            FROM
-                `ladder:migrations`'
-        );
-
-        $stmt->execute();
-
         $allMigrations = $this->getAllMigrations();
 
-        while (($id = $stmt->fetchColumn()) !== false) {
-            $appliedMigrations[$id] = $allMigrations[$id];
-        }
-
-        return $appliedMigrations;
+        return array_filter(
+            $allMigrations,
+            function ($migration) {
+                return $migration->isApplied();
+            }
+        );
     }
 
     public function applyMigration(AbstractMigration $migration)
@@ -184,25 +178,31 @@ class MigrationManager
             $data = $migration->apply();
         } catch (\Exception $e) {
             // TODO: Tidy up.
-            throw $e;
+            throw new \Exception(__FILE__ . ':' . __LINE__, 0, $e);
         }
 
         $stmt = $this->db->prepare(
             'INSERT INTO
                 `ladder:migrations` (
                     `id`,
+                    `appliedAt`,
                     `data`
                 )
             VALUES (
                 :id,
+                :appliedAt,
                 :data
             )'
         );
 
         $stmt->execute([
-            'id'   => $migration->getId(),
-            'data' => json_encode($data),
+            'id'        => $migration->getId(),
+            'appliedAt' => date('Y-m-d H:i:s'),
+            'data'      => json_encode($data),
         ]);
+
+        // Update the cached value.
+        $migration->getAppliedAt(true);
     }
 
     public function rollbackMigration(AbstractMigration $migration)
@@ -230,7 +230,7 @@ class MigrationManager
             $migration->rollback($data);
         } catch (\Exception $e) {
             // TODO: Tidy up.
-            throw $e;
+            throw new \Exception(__FILE__ . ':' . __LINE__, 0, $e);
         }
 
         // Only attempt to record the change if the table exists.
@@ -246,15 +246,12 @@ class MigrationManager
                 'id' => $migration->getId(),
             ]);
         }
+
+        // Update the cached value.
+        $migration->getAppliedAt(true);
     }
 
-    public function createInstance($id)
-    {
-        $class = $this->getAllMigrations()[$id];
-        return new $class($this->container);
-    }
-
-    protected function hasMigrationsTable()
+    public function hasMigrationsTable()
     {
         $stmt = $this->db->query(
             'SHOW TABLES LIKE \'ladder:migrations\''

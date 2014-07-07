@@ -71,17 +71,15 @@ class MigrateCommand extends AbstractCommand
             $destination
         ));
 
-        foreach ($availableMigrations as $id => $class) {
-            $instance = $manager->createInstance($id);
-
+        foreach ($availableMigrations as $id => $migration) {
             $output->write(sprintf(
                 '<info>Applying %d: <comment>%s</comment>: </info>',
                 $id,
-                $instance->getName()
+                $migration->getName()
             ));
 
             try {
-                $manager->applyMigration($instance);
+                $manager->applyMigration($migration);
                 $output->writeln('<info>OK</info>');
             } catch (\Exception $e) {
                 $output->writeln(sprintf(
@@ -109,17 +107,15 @@ class MigrateCommand extends AbstractCommand
             $destination
         ));
 
-        foreach ($appliedMigrations as $id => $class) {
-            $instance = $manager->createInstance($id);
-
+        foreach ($appliedMigrations as $id => $migration) {
             $output->write(sprintf(
                 '<info>Rolling back %d: <comment>%s</comment>: </info>',
                 $id,
-                $instance->getName()
+                $migration->getName()
             ));
 
             try {
-                $manager->rollbackMigration($instance);
+                $manager->rollbackMigration($migration);
                 $output->writeln('<info>OK</info>');
             } catch (\Exception $e) {
                 $output->writeln(sprintf(
