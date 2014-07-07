@@ -1,7 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-$container = require_once __DIR__ . '/bootstrap.php';
+define('LADDER_BIN_PATH', __DIR__);
+
+$container = require_once LADDER_BIN_PATH . '/../bootstrap.php';
 
 $configPathname = Ladder\Path::join(getcwd(), 'ladder.json');
 
