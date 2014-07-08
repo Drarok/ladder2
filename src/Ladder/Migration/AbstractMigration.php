@@ -43,34 +43,19 @@ abstract class AbstractMigration
         return $this->container[$key];
     }
 
-    public function getAppliedAt($flushCache = false)
+    public function setAppliedAt($appliedAt)
     {
-        if ($this->appliedAt === null || $flushCache) {
-            if (! $this->container['migrationManager']->hasMigrationsTable()) {
-                return $this->appliedAt = false;
-            }
+        $this->appliedAt = $appliedAt;
+        return $this;
+    }
 
-            $stmt = $this->db->prepare(
-                'SELECT
-                    appliedAt
-                FROM
-                    `ladder:migrations`
-                WHERE
-                    `id` = :id
-                LIMIT
-                    1'
-            );
-            $stmt->execute([
-                'id' => $this->getId(),
-            ]);
-            $this->appliedAt = $stmt->fetchColumn();
-        }
-
+    public function getAppliedAt()
+    {
         return $this->appliedAt;
     }
 
     public function isApplied()
     {
-        return ($this->getAppliedAt() !== false);
+        return (bool) $this->appliedAt;
     }
 }
