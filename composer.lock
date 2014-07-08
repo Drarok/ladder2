@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7df4a2d296293f82f016a2a66867da35",
+    "hash": "b2e9c3ad62645a5fbec9288fa93919e9",
     "packages": [
         {
             "name": "pimple/pimple",
@@ -56,17 +56,17 @@
         },
         {
             "name": "symfony/console",
-            "version": "v2.4.6",
+            "version": "v2.4.7",
             "target-dir": "Symfony/Component/Console",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Console.git",
-                "reference": "24f723436e62598c9dddee2a8573d6992504dc5d"
+                "reference": "a14ed929c880e1c9d7bbaa5f77cdc07da3cc04a6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Console/zipball/24f723436e62598c9dddee2a8573d6992504dc5d",
-                "reference": "24f723436e62598c9dddee2a8573d6992504dc5d",
+                "url": "https://api.github.com/repos/symfony/Console/zipball/a14ed929c880e1c9d7bbaa5f77cdc07da3cc04a6",
+                "reference": "a14ed929c880e1c9d7bbaa5f77cdc07da3cc04a6",
                 "shasum": ""
             },
             "require": {
@@ -107,7 +107,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "http://symfony.com",
-            "time": "2014-05-14 21:48:29"
+            "time": "2014-07-08 11:46:35"
         }
     ],
     "packages-dev": [],
