@@ -58,7 +58,7 @@ class MigrateCommand extends AbstractCommand
 
     protected function apply(OutputInterface $output, MigrationManager $manager, $source, $destination)
     {
-        if (! $manager->hasAvailableMigrations()) {
+        if (! $manager->hasAvailableMigrations() || $source == $destination) {
             $output->writeln('<info>Already up-to-date.</info>');
             return;
         }
@@ -70,6 +70,10 @@ class MigrateCommand extends AbstractCommand
         ));
 
         foreach ($manager->getAvailableMigrations() as $migration) {
+            if ($destination !== 'latest' && $migration->getId() > $destination) {
+                break;
+            }
+
             $output->write(sprintf(
                 '<info>Applying %d: <comment>%s</comment>: </info>',
                 $migration->getId(),
@@ -110,6 +114,10 @@ class MigrateCommand extends AbstractCommand
         krsort($appliedMigrations);
 
         foreach ($appliedMigrations as $migration) {
+            if ($migration->getId() <= $destination) {
+                break;
+            }
+
             $output->write(sprintf(
                 '<info>Rolling back %d: <comment>%s</comment>: </info>',
                 $migration->getId(),
