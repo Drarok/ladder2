@@ -197,6 +197,22 @@ class MigrationManager
         }
     }
 
+    /**
+     * Quick way to check if there are any migrations applied.
+     *
+     * @return bool
+     */
+    public function hasAppliedMigrations()
+    {
+        foreach ($this->getAllMigrations() as $migration) {
+            if ($migration->isApplied()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function applyMigration(AbstractMigration $migration)
     {
         $appliedAt = date('Y-m-d H:i:s');
