@@ -15,7 +15,7 @@ class Migration1 extends AbstractMigration
     public function apply()
     {
         Table::factory('ladder:migrations')
-            ->addColumn('id', 'autoincrement', ['unsigned' => true])
+            ->addColumn('id', 'integer', ['null' => false, 'unsigned' => true])
             ->addColumn('appliedAt', 'datetime', ['null' => false])
             ->addColumn('data', 'text')
             ->addIndex('PRIMARY', ['id'])
