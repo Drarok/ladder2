@@ -21,17 +21,22 @@ class MigrationManager
     protected $paths = [];
 
     /**
-     * Migration groups handled by this instance.
+     * Constructor.
      *
-     * @var array
+     * @param Pimple $container Container.
      */
-    protected $groups = array();
-
     public function __construct(\Pimple $container)
     {
         $this->container = $container;
     }
 
+    /**
+     * Magic getter, passes control to the container.
+     *
+     * @param string $key Dependency key.
+     *
+     * @return mixed
+     */
     public function __get($key)
     {
         return $this->container[$key];
@@ -90,16 +95,29 @@ class MigrationManager
     }
 
     /**
-     * Get an array of migrations, keyed on the id.
+     * Get all migrations, regardless of whether or not they are applied.
      *
-     * @return array
+     * @return Generator
      */
     public function getAllMigrations()
     {
-        $result = [];
+        // Grab all the appliedAt dates in one go for efficiency's sake.
+        $stmt = $this->db->query(
+            'SELECT
+                `id`,
+                `appliedAt`
+            FROM
+                `ladder:migrations`
+            ORDER BY
+                `id`'
+        );
+
+        $appliedMigrations = [];
+        while ($row = $stmt->fetch()) {
+            $appliedMigrations[$row['id']] = $row['appliedAt'];
+        }
 
         foreach ($this->paths as $namespace => $path) {
-
             if (! $path) {
                 throw new \InvalidArgumentException('Invalid migrations path.');
             }
@@ -125,57 +143,67 @@ class MigrationManager
 
                 $class = $namespace . '\\' . $fileInfo->getBasename('.php');
                 $migration = new $class($this->container);
-                $result[$migration->getId()] = $migration;
+
+                if (array_key_exists($migration->getId(), $appliedMigrations)) {
+                    $migration->setAppliedAt($appliedMigrations[$migration->getId()]);
+                }
+
+                yield $migration;
             }
         }
-
-        ksort($result);
-
-        return $result;
     }
 
     /**
      * Get all migrations except those already applied.
      *
-     * @return array
+     * @return Generator
      */
     public function getAvailableMigrations()
     {
-        $allMigrations = $this->getAllMigrations();
-
-        // Shortcut if there's no migrations table.
-        if (! $this->hasMigrationsTable()) {
-            return $allMigrations;
-        }
-
-        return array_filter(
-            $allMigrations,
-            function ($migration) {
-                return ! $migration->isApplied();
+        foreach ($this->getAllMigrations() as $migration) {
+            if (! $migration->isApplied()) {
+                yield $migration;
             }
-        );
+        }
     }
 
-    public function getAppliedMigrations()
+    /**
+     * Quick way to check if there are any migrations available to apply.
+     *
+     * @return bool
+     */
+    public function hasAvailableMigrations()
     {
-        if (! $this->hasMigrationsTable()) {
-            return [];
+        foreach ($this->getAllMigrations() as $migration) {
+            if (! $migration->isApplied()) {
+                return true;
+            }
         }
 
-        $allMigrations = $this->getAllMigrations();
+        return false;
+    }
 
-        return array_filter(
-            $allMigrations,
-            function ($migration) {
-                return $migration->isApplied();
+    /**
+     * Get all the migrations that are applied to the database.
+     *
+     * @return Generator
+     */
+    public function getAppliedMigrations()
+    {
+        foreach ($this->getAllMigrations() as $migration) {
+            if ($migration->isApplied()) {
+                yield $migration;
             }
-        );
+        }
     }
 
     public function applyMigration(AbstractMigration $migration)
     {
+        $appliedAt = date('Y-m-d H:i:s');
+
         try {
             $data = $migration->apply();
+            $migration->setAppliedAt($appliedAt);
         } catch (\Exception $e) {
             // TODO: Tidy up.
             throw new \Exception(__FILE__ . ':' . __LINE__, 0, $e);
@@ -197,12 +225,9 @@ class MigrationManager
 
         $stmt->execute([
             'id'        => $migration->getId(),
-            'appliedAt' => date('Y-m-d H:i:s'),
+            'appliedAt' => $appliedAt,
             'data'      => json_encode($data),
         ]);
-
-        // Update the cached value.
-        $migration->getAppliedAt(true);
     }
 
     public function rollbackMigration(AbstractMigration $migration)
@@ -228,6 +253,7 @@ class MigrationManager
 
         try {
             $migration->rollback($data);
+            $migration->setAppliedAt(null);
         } catch (\Exception $e) {
             // TODO: Tidy up.
             throw new \Exception(__FILE__ . ':' . __LINE__, 0, $e);
@@ -246,11 +272,13 @@ class MigrationManager
                 'id' => $migration->getId(),
             ]);
         }
-
-        // Update the cached value.
-        $migration->getAppliedAt(true);
     }
 
+    /**
+     * Does the migrations table exist?
+     *
+     * @return bool
+     */
     public function hasMigrationsTable()
     {
         $stmt = $this->db->query(
