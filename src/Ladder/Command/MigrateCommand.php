@@ -58,9 +58,7 @@ class MigrateCommand extends AbstractCommand
 
     protected function apply(OutputInterface $output, MigrationManager $manager, $source, $destination)
     {
-        $availableMigrations = $manager->getAvailableMigrations();
-
-        if (! count($availableMigrations)) {
+        if (! $manager->hasAvailableMigrations()) {
             $output->writeln('<info>Already up-to-date.</info>');
             return;
         }
@@ -71,10 +69,10 @@ class MigrateCommand extends AbstractCommand
             $destination
         ));
 
-        foreach ($availableMigrations as $id => $migration) {
+        foreach ($manager->getAvailableMigrations() as $migration) {
             $output->write(sprintf(
                 '<info>Applying %d: <comment>%s</comment>: </info>',
-                $id,
+                $migration->getId(),
                 $migration->getName()
             ));
 
@@ -93,10 +91,7 @@ class MigrateCommand extends AbstractCommand
 
     protected function rollback(OutputInterface $output, MigrationManager $manager, $source, $destination)
     {
-        $appliedMigrations = $manager->getAppliedMigrations();
-        krsort($appliedMigrations);
-
-        if (! count($appliedMigrations)) {
+        if (! $manager->hasAppliedMigrations()) {
             $output->writeln('<info>Already up-to-date.</info>');
             return;
         }
@@ -107,10 +102,17 @@ class MigrateCommand extends AbstractCommand
             $destination
         ));
 
-        foreach ($appliedMigrations as $id => $migration) {
+        // Grab the applied migrations, and reverse-sort.
+        $appliedMigrations = [];
+        foreach ($manager->getAppliedMigrations() as $migration) {
+            $appliedMigrations[$migration->getId()] = $migration;
+        }
+        krsort($appliedMigrations);
+
+        foreach ($appliedMigrations as $migration) {
             $output->write(sprintf(
                 '<info>Rolling back %d: <comment>%s</comment>: </info>',
-                $id,
+                $migration->getId(),
                 $migration->getName()
             ));
 
