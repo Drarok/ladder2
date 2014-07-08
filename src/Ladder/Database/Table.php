@@ -37,13 +37,22 @@ class Table
     protected $columns;
 
     /**
-     * Index object, keyed on action.
+     * Index objects, keyed on action.
      *
      * @see $this->clear()
      *
      * @var array
      */
     protected $indexes;
+
+    /**
+     * Constraint objects, keyed on action.
+     *
+     * @see  $this->clear()
+     *
+     * @var array
+     */
+    protected $constraints;
 
     /**
      * Factory.
@@ -87,6 +96,16 @@ class Table
         $this->db = $db;
 
         $this->clear();
+    }
+
+    /**
+     * Getter for the name of the table.
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -166,6 +185,59 @@ class Table
     }
 
     /**
+     * Add a constraint.
+     *
+     * @param array  $columns          Columns in this table to constrain.
+     * @param string $referenceTable   Name of the parent table.
+     * @param array  $referenceColumns Columns in the parent table.
+     * @param array  $options          Additional options.
+     *
+     * @return $this
+     */
+    public function addConstraint(array $columns, $referenceTable, array $referenceColumns, array $options = [])
+    {
+        $name = $this->generateConstraintName($columns, $referenceTable, $referenceColumns);
+
+        $this->constraints['add'][$name] = new Constraint(
+            $name,
+            $columns,
+            $referenceTable,
+            $referenceColumns,
+            $options
+        );
+        return $this;
+    }
+
+    /**
+     * Drop a constraint.
+     *
+     * @param array  $columns          Columns in this table to constrain.
+     * @param string $referenceTable   Name of the parent table.
+     * @param array  $referenceColumns Columns in the parent table.
+     *
+     * @return $this
+     */
+    public function dropConstraint(array $columns, $referenceTable, array $referenceColumns)
+    {
+        $name = $this->generateConstraintName($columns, $referenceTable, $referenceColumns);
+        $this->constraints['drop'][$name] = new Constraint($name, $columns, $referenceTable, $referenceColumns);
+        return $this;
+    }
+
+    /**
+     * Drop a constraint by its name.
+     *
+     * @param string $name Name of the constraint.
+     *
+     * @return $this
+     */
+    public function dropConstraintByName($name)
+    {
+        $this->constraints['drop'][$name] = new Constraint($name, [], '', []);
+        return $this;
+    }
+
+    /**
      * Create the table.
      *
      * @return void
@@ -182,11 +254,26 @@ class Table
             $elements[] = $index->getCreateSQL();
         }
 
-        $this->db->query(sprintf(
+        foreach ($this->constraints['add'] as $constraint) {
+            $elements[] = $constraint->getCreateSQL();
+        }
+
+        $elements = array_map(
+            function ($e) {
+                return PHP_EOL . '    ' . $e;
+            },
+            $elements
+        );
+
+        $sql = sprintf(
             'CREATE TABLE `%s` (%s)',
             $this->name,
-            PHP_EOL . implode(',' . PHP_EOL, $elements) . PHP_EOL
-        ));
+            implode(',', $elements) . PHP_EOL
+        );
+
+        echo $sql, PHP_EOL;
+
+        $this->db->query($sql);
 
         $this->clear();
     }
@@ -218,6 +305,14 @@ class Table
 
         foreach ($this->indexes['add'] as $index) {
             $elements[] = $index->getAddSQL();
+        }
+
+        foreach ($this->constraints['drop'] as $constraint) {
+            $elements[] = $constraint->getDropSQL();
+        }
+
+        foreach ($this->constraints['add'] as $constraint) {
+            $elements[] = $constraint->getAddSQL();
         }
 
         $this->db->query(sprintf(
@@ -261,5 +356,30 @@ class Table
             'drop'  => [],
             'add'   => [],
         ];
+
+        $this->constraints = [
+            'drop' => [],
+            'add'  => [],
+        ];
+    }
+
+    /**
+     * Generate a unique constraint name.
+     *
+     * @param array  $columns          Columns in this table to constrain.
+     * @param string $referenceTable   Name of the parent table.
+     * @param array  $referenceColumns Columns in the parent table.
+     *
+     * @return string
+     */
+    protected function generateConstraintName(array $columns, $referenceTable, array $referenceColumns)
+    {
+        return sprintf(
+            '%s:%s::%s:%s',
+            $this->getName(),
+            implode(':', $columns),
+            $referenceTable,
+            implode(':', $referenceColumns)
+        );
     }
 }
