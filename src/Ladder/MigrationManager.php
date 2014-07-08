@@ -102,19 +102,22 @@ class MigrationManager
     public function getAllMigrations()
     {
         // Grab all the appliedAt dates in one go for efficiency's sake.
-        $stmt = $this->db->query(
-            'SELECT
-                `id`,
-                `appliedAt`
-            FROM
-                `ladder:migrations`
-            ORDER BY
-                `id`'
-        );
-
         $appliedMigrations = [];
-        while ($row = $stmt->fetch()) {
-            $appliedMigrations[$row['id']] = $row['appliedAt'];
+
+        if ($this->hasMigrationsTable()) {
+            $stmt = $this->db->query(
+                'SELECT
+                    `id`,
+                    `appliedAt`
+                FROM
+                    `ladder:migrations`
+                ORDER BY
+                    `id`'
+            );
+
+            while ($row = $stmt->fetch()) {
+                $appliedMigrations[$row['id']] = $row['appliedAt'];
+            }
         }
 
         foreach ($this->paths as $namespace => $path) {
