@@ -159,15 +159,18 @@ class MigrationManager
     /**
      * Get all migrations except those already applied.
      *
-     * @return Generator
+     * @return array
      */
     public function getAvailableMigrations()
     {
+        $result = [];
         foreach ($this->getAllMigrations() as $migration) {
             if (! $migration->isApplied()) {
-                yield $migration;
+                $result[$migration->getId()] = $migration;
             }
         }
+        ksort($result);
+        return $result;
     }
 
     /**
@@ -187,17 +190,20 @@ class MigrationManager
     }
 
     /**
-     * Get all the migrations that are applied to the database.
+     * Get all the migrations that are applied to the database (in reverse order).
      *
-     * @return Generator
+     * @return array
      */
     public function getAppliedMigrations()
     {
+        $result = [];
         foreach ($this->getAllMigrations() as $migration) {
             if ($migration->isApplied()) {
-                yield $migration;
+                $result[$migration->getId()] = $migration;
             }
         }
+        krsort($result);
+        return $result;
     }
 
     /**
