@@ -80,13 +80,24 @@ class Constraint
             $this->referenceColumns
         );
 
-        return sprintf(
-            'CONSTRAINT `%s` FOREIGN KEY (%s) REFERENCES `%s` (%s)',
+        $optionString = '';
+
+        if ($deleteAction = Arr::get($this->options, 'delete')) {
+            $optionString .= 'ON DELETE ' . $deleteAction . ' ';
+        }
+
+        if ($updateAction = Arr::get($this->options, 'update')) {
+            $optionString .= 'ON UPDATE ' . $updateAction . ' ';
+        }
+
+        return trim(sprintf(
+            'CONSTRAINT `%s` FOREIGN KEY (%s) REFERENCES `%s` (%s) %s',
             $this->name,
             implode(', ', $columns),
             $this->referenceTable,
-            implode(', ', $referenceColumns)
-        );
+            implode(', ', $referenceColumns),
+            $optionString
+        ));
     }
 
     /**
