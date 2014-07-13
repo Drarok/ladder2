@@ -79,6 +79,13 @@ class Column
             $sql .= ' AUTO_INCREMENT';
         }
 
+        if ($default = Arr::get($this->options, 'default')) {
+            if (! is_numeric($default)) {
+                $default = '\'' . str_replace('\'', '\\\'', $default) . '\'';
+            }
+            $sql .= sprintf(' DEFAULT %s', $default);
+        }
+
         if ($after = Arr::get($this->options, 'after')) {
             $sql .= sprintf(' AFTER `%s`', $after);
         }
