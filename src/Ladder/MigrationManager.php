@@ -95,65 +95,18 @@ class MigrationManager
     }
 
     /**
-     * Get all migrations, regardless of whether or not they are applied.
+     * Get all migrations, keyed and sorted on id.
      *
-     * @return Generator
+     * @return array
      */
     public function getAllMigrations()
     {
-        // Grab all the appliedAt dates in one go for efficiency's sake.
-        $appliedMigrations = [];
-
-        if ($this->hasMigrationsTable()) {
-            $stmt = $this->db->query(
-                'SELECT
-                    `id`,
-                    `appliedAt`
-                FROM
-                    `ladder:migrations`
-                ORDER BY
-                    `id`'
-            );
-
-            while ($row = $stmt->fetch()) {
-                $appliedMigrations[$row['id']] = $row['appliedAt'];
-            }
+        $result = [];
+        foreach ($this->findAllMigrations() as $migration) {
+            $result[$migration->getId()] = $migration;
         }
-
-        foreach ($this->paths as $namespace => $path) {
-            if (! $path) {
-                throw new \InvalidArgumentException('Invalid migrations path.');
-            }
-
-            // Convert relative paths into absolute.
-            if ($path[0] != '/' && $path[0] != '\\') {
-                $path = Path::join(getcwd(), $path);
-            }
-
-            if (! is_dir($path)) {
-                throw new \InvalidArgumentException('Invalid migrations path: ' . $path);
-            }
-
-            $dir = new \DirectoryIterator($path);
-            foreach ($dir as $fileInfo) {
-                if ($dir->isDot()) {
-                    continue;
-                }
-
-                if (! fnmatch('Migration*.php', $fileInfo->getFilename())) {
-                    continue;
-                }
-
-                $class = $namespace . '\\' . $fileInfo->getBasename('.php');
-                $migration = new $class($this->container);
-
-                if (array_key_exists($migration->getId(), $appliedMigrations)) {
-                    $migration->setAppliedAt($appliedMigrations[$migration->getId()]);
-                }
-
-                yield $migration;
-            }
-        }
+        ksort($result);
+        return $result;
     }
 
     /**
@@ -164,7 +117,7 @@ class MigrationManager
     public function getAvailableMigrations()
     {
         $result = [];
-        foreach ($this->getAllMigrations() as $migration) {
+        foreach ($this->findAllMigrations() as $migration) {
             if (! $migration->isApplied()) {
                 $result[$migration->getId()] = $migration;
             }
@@ -180,7 +133,7 @@ class MigrationManager
      */
     public function hasAvailableMigrations()
     {
-        foreach ($this->getAllMigrations() as $migration) {
+        foreach ($this->findAllMigrations() as $migration) {
             if (! $migration->isApplied()) {
                 return true;
             }
@@ -197,7 +150,7 @@ class MigrationManager
     public function getAppliedMigrations()
     {
         $result = [];
-        foreach ($this->getAllMigrations() as $migration) {
+        foreach ($this->findAllMigrations() as $migration) {
             if ($migration->isApplied()) {
                 $result[$migration->getId()] = $migration;
             }
@@ -213,7 +166,7 @@ class MigrationManager
      */
     public function hasAppliedMigrations()
     {
-        foreach ($this->getAllMigrations() as $migration) {
+        foreach ($this->findAllMigrations() as $migration) {
             if ($migration->isApplied()) {
                 return true;
             }
@@ -311,5 +264,69 @@ class MigrationManager
         );
 
         return ($stmt->fetchColumn() !== false);
+    }
+
+    /**
+     * Find all migration files, regardless of whether or not they are applied.
+     *
+     * Note that these are *not* guaranteed to be in any order!
+     *
+     * @return Generator
+     */
+    protected function findAllMigrations()
+    {
+        // Grab all the appliedAt dates in one go for efficiency's sake.
+        $appliedMigrations = [];
+
+        if ($this->hasMigrationsTable()) {
+            $stmt = $this->db->query(
+                'SELECT
+                    `id`,
+                    `appliedAt`
+                FROM
+                    `ladder:migrations`
+                ORDER BY
+                    `id`'
+            );
+
+            while ($row = $stmt->fetch()) {
+                $appliedMigrations[$row['id']] = $row['appliedAt'];
+            }
+        }
+
+        foreach ($this->paths as $namespace => $path) {
+            if (! $path) {
+                throw new \InvalidArgumentException('Invalid migrations path.');
+            }
+
+            // Convert relative paths into absolute.
+            if ($path[0] != '/' && $path[0] != '\\') {
+                $path = Path::join(getcwd(), $path);
+            }
+
+            if (! is_dir($path)) {
+                throw new \InvalidArgumentException('Invalid migrations path: ' . $path);
+            }
+
+            $dir = new \DirectoryIterator($path);
+            foreach ($dir as $fileInfo) {
+                if ($dir->isDot()) {
+                    continue;
+                }
+
+                if (! fnmatch('Migration*.php', $fileInfo->getFilename())) {
+                    continue;
+                }
+
+                $class = $namespace . '\\' . $fileInfo->getBasename('.php');
+                $migration = new $class($this->container);
+
+                if (array_key_exists($migration->getId(), $appliedMigrations)) {
+                    $migration->setAppliedAt($appliedMigrations[$migration->getId()]);
+                }
+
+                yield $migration;
+            }
+        }
     }
 }
