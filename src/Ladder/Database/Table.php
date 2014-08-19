@@ -117,7 +117,7 @@ class Table
      *
      * @return $this
      */
-    public function addColumn($name, $type, array $options = [])
+    public function addColumn($name, $type, array $options = array())
     {
         $this->columns['add'][$name] = new Column($name, $type, $options);
         return $this;
@@ -132,7 +132,7 @@ class Table
      *
      * @return $this
      */
-    public function alterColumn($name, $type, array $options = [])
+    public function alterColumn($name, $type, array $options = array())
     {
         $this->columns['alter'][$name] = new Column($name, $type, $options);
         return $this;
@@ -160,11 +160,11 @@ class Table
      *
      * @return $this
      */
-    public function addIndex($name, array $columns = null, array $options = [])
+    public function addIndex($name, array $columns = null, array $options = array())
     {
         // If no columns passed in, default to a column matching the index name.
         if ($columns === null) {
-            $columns = [$name];
+            $columns = array($name);
         }
 
         $this->indexes['add'][$name] = new Index($name, $columns, $options);
@@ -180,7 +180,7 @@ class Table
      */
     public function dropIndex($name)
     {
-        $this->indexes['drop'][$name] = new Index($name, []);
+        $this->indexes['drop'][$name] = new Index($name, array());
         return $this;
     }
 
@@ -194,7 +194,7 @@ class Table
      *
      * @return $this
      */
-    public function addConstraint(array $columns, $referenceTable, array $referenceColumns, array $options = [])
+    public function addConstraint(array $columns, $referenceTable, array $referenceColumns, array $options = array())
     {
         $name = $this->generateConstraintName($columns, $referenceTable, $referenceColumns);
 
@@ -233,7 +233,7 @@ class Table
      */
     public function dropConstraintByName($name)
     {
-        $this->constraints['drop'][$name] = new Constraint($name, [], '', []);
+        $this->constraints['drop'][$name] = new Constraint($name, array(), '', array());
         return $this;
     }
 
@@ -244,7 +244,7 @@ class Table
      */
     public function create()
     {
-        $elements = [];
+        $elements = array();
 
         foreach ($this->columns['add'] as $column) {
             $elements[] = $column->getCreateSQL();
@@ -285,7 +285,7 @@ class Table
      */
     public function alter()
     {
-        $elements = [];
+        $elements = array();
 
         foreach ($this->columns['drop'] as $column) {
             $elements[] = $column->getDropSQL();
@@ -346,21 +346,21 @@ class Table
      */
     protected function clear()
     {
-        $this->columns = [
-            'drop'  => [],
-            'alter' => [],
-            'add'   => [],
-        ];
+        $this->columns = array(
+            'drop'  => array(),
+            'alter' => array(),
+            'add'   => array(),
+        );
 
-        $this->indexes = [
-            'drop'  => [],
-            'add'   => [],
-        ];
+        $this->indexes = array(
+            'drop'  => array(),
+            'add'   => array(),
+        );
 
-        $this->constraints = [
-            'drop' => [],
-            'add'  => [],
-        ];
+        $this->constraints = array(
+            'drop' => array() ,
+            'add'  => array() ,
+        );
     }
 
     /**

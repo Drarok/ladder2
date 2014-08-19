@@ -80,16 +80,16 @@ class CreateCommand extends AbstractCommand
         $id = time();
 
         $template = str_replace(
-            [
+            array(
                 '{{ namespace }}',
                 '{{ id }}',
                 '{{ name }}',
-            ],
-            [
+            ),
+            array(
                 $namespace,
                 $id,
                 $name,
-            ],
+            ),
             file_get_contents(Path::join($this->rootPath, 'views', 'migration.template'))
         );
 

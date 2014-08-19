@@ -12,7 +12,7 @@ class Column
 
     protected $options;
 
-    public function __construct($name, $type, array $options = [])
+    public function __construct($name, $type, array $options = array())
     {
         $this->name = $name;
         $this->type = $type;
