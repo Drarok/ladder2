@@ -52,7 +52,7 @@ $container['migrationManager'] = $container->share(function ($container) {
 });
 
 $container['app'] = $container->share(function ($container) {
-    $app = new Application('Ladder2', Version::getVersion());
+    $app = new Application('Ladder', Version::getVersion());
 
     $app->addCommands(array(
         new Command\CreateCommand($container),
