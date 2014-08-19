@@ -25,12 +25,12 @@ $container['db'] = $container->share(function ($container) {
         $config['dsn'],
         $config['username'],
         $config['password'],
-        [
+        array(
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_STRINGIFY_FETCHES  => false,
-        ]
+        )
     );
 });
 
@@ -54,11 +54,11 @@ $container['migrationManager'] = $container->share(function ($container) {
 $container['app'] = $container->share(function ($container) {
     $app = new Application('Ladder2', Version::getVersion());
 
-    $app->addCommands([
+    $app->addCommands(array(
         new Command\CreateCommand($container),
         new Command\StatusCommand($container),
         new Command\MigrateCommand($container),
-    ]);
+    ));
 
     return $app;
 });

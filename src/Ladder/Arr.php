@@ -17,7 +17,7 @@ abstract class Arr
             };
         }
 
-        $result = [];
+        $result = array();
         foreach ($arr as $key => $val) {
             if ($callback($key, $val)) {
                 $result[$key] = $val;

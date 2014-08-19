@@ -27,7 +27,7 @@ class Index
      */
     protected $options;
 
-    public function __construct($name, array $columns, array $options = [])
+    public function __construct($name, array $columns, array $options = array())
     {
         $this->name = $name;
         $this->columns = $columns;

@@ -50,7 +50,7 @@ class Constraint
      * @param array  $referenceColumns Columns in the parent table.
      * @param array  $options          Additional options.
      */
-    public function __construct($name, array $columns, $referenceTable, array $referenceColumns, array $options = [])
+    public function __construct($name, array $columns, $referenceTable, array $referenceColumns, array $options = array())
     {
         $this->name = $name;
         $this->columns = $columns;
