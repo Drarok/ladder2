@@ -271,8 +271,6 @@ class Table
             implode(',', $elements) . PHP_EOL
         );
 
-        echo $sql, PHP_EOL;
-
         $this->db->query($sql);
 
         $this->clear();
