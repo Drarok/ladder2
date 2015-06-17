@@ -57,11 +57,13 @@ class MigrateCommand extends AbstractCommand
             $method = 'apply';
         }
 
-        $this->$method($output, $manager, $source, $destination);
+        $this->$method($output, $source, $destination);
     }
 
-    protected function apply(OutputInterface $output, MigrationManager $manager, $source, $destination)
+    protected function apply(OutputInterface $output, $source, $destination)
     {
+        $manager = $this->migrationManager;
+
         if (! $manager->hasAvailableMigrations() || $source == $destination) {
             $output->writeln('<info>Already up-to-date.</info>');
             return;
@@ -97,8 +99,10 @@ class MigrateCommand extends AbstractCommand
         }
     }
 
-    protected function rollback(OutputInterface $output, MigrationManager $manager, $source, $destination)
+    protected function rollback(OutputInterface $output, $source, $destination)
     {
+        $manager = $this->migrationManager;
+
         if (! $manager->hasAppliedMigrations()) {
             $output->writeln('<info>Already up-to-date.</info>');
             return;
