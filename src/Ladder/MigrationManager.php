@@ -110,6 +110,17 @@ class MigrationManager
     }
 
     /**
+     * Get the latest migration.
+     *
+     * @return AbstractMigration
+     */
+    public function getLatestMigration()
+    {
+        $migrations = $this->getAllMigrations();
+        return array_pop($migrations);
+    }
+
+    /**
      * Get all migrations except those already applied.
      *
      * @return array
