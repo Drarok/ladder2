@@ -32,7 +32,7 @@ $container['db'] = $container->share(function ($container) {
             LoggingPDO::ATTR_EMULATE_PREPARES   => false,
             LoggingPDO::ATTR_ERRMODE            => LoggingPDO::ERRMODE_EXCEPTION,
             LoggingPDO::ATTR_STRINGIFY_FETCHES  => false,
-            LoggingPDO::ATTR_STATEMENT_CLASS    => array('Ladder\\PDO\\PDOStatement', array()),
+            LoggingPDO::ATTR_STATEMENT_CLASS    => array('Ladder\\PDO\\PDOStatement', array($container)),
         )
     );
 });
