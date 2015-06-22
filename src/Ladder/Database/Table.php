@@ -381,8 +381,8 @@ class Table
         );
 
         if (!$this->db->prepare($sql)->execute($data)) {
+            // TODO: Improve this.
             throw new \Exception('Failed to insert?!');
-
         }
 
         $this->lastInsertId = (int) $this->db->lastInsertId();
@@ -406,6 +406,7 @@ class Table
         );
 
         if (!$this->db->prepare($sql)->execute($where)) {
+            // TODO: Improve this.
             throw new \Exception('Failed to delete?!');
         }
 
