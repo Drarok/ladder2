@@ -34,6 +34,11 @@ class LoggingPDO extends PDO
         if ($this->outputQueries) {
             $this->outputQueries->writeln('prepare: ' . $sql);
         }
-        return parent::prepare($sql, $options);
+
+        if ($options === null) {
+            return parent::prepare($sql);
+        } else {
+            return parent::prepare($sql, $options);
+        }
     }
 }
