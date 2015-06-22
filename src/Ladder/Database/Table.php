@@ -55,6 +55,13 @@ class Table
     protected $constraints;
 
     /**
+     * Last insert id.
+     *
+     * @var integer
+     */
+    protected $lastInsertId;
+
+    /**
      * Factory.
      *
      * @param string $name Name of the table.
@@ -341,6 +348,78 @@ class Table
         $this->db->query($sql);
 
         return $this;
+    }
+
+    /**
+     * Insert a row to the table.
+     *
+     * @param array $data Table data, column => value.
+     *
+     * @return $this
+     */
+    public function insert($data)
+    {
+        $columns = array_map(
+            function ($column) {
+                return '`' . $column . '`';
+            },
+            array_keys($data)
+        );
+
+        $placeholders = array_map(
+            function ($column) {
+                return ':' . $column;
+            },
+            array_keys($data)
+        );
+
+        $sql = sprintf(
+            'INSERT INTO `%s` (%s) VALUES (%s)',
+            $this->getName(),
+            implode(', ', $columns),
+            implode(', ', $placeholders)
+        );
+
+        if (!$this->db->prepare($sql)->execute($data)) {
+            throw new \Exception('Failed to insert?!');
+
+        }
+
+        $this->lastInsertId = $this->db->lastInsertId();
+
+        return $this;
+    }
+
+    public function delete(array $where)
+    {
+        $clauses = array_map(
+            function ($column) {
+                return sprintf('`%1$s` = :%1$s', $column);
+            },
+            array_keys($where)
+        );
+
+        $sql = sprintf(
+            'DELETE FROM `%s` WHERE %s',
+            $this->getName(),
+            implode(' AND ', $clauses)
+        );
+
+        if (!$this->db->prepare($sql)->execute($where)) {
+            throw new \Exception('Failed to delete?!');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the last insert id.
+     *
+     * @return int
+     */
+    public function getLastInsertId()
+    {
+        return $this->lastInsertId;
     }
 
     /**
