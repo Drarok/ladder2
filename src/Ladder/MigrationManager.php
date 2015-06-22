@@ -195,7 +195,7 @@ class MigrationManager
             $migration->setAppliedAt($appliedAt);
         } catch (\Exception $e) {
             // TODO: Tidy up.
-            throw new \Exception(__FILE__ . ':' . __LINE__, 0, $e);
+            throw $e;
         }
 
         $stmt = $this->db->prepare(
@@ -245,7 +245,7 @@ class MigrationManager
             $migration->setAppliedAt(null);
         } catch (\Exception $e) {
             // TODO: Tidy up.
-            throw new \Exception(__FILE__ . ':' . __LINE__, 0, $e);
+            throw $e;
         }
 
         // Only attempt to record the change if the table exists.
