@@ -29,11 +29,11 @@ class LoggingPDO extends PDO
         return parent::query($sql);
     }
 
-    public function prepare($sql)
+    public function prepare($sql, $options = null)
     {
         if ($this->outputQueries) {
             $this->outputQueries->writeln('prepare: ' . $sql);
         }
-        return parent::prepare($sql);
+        return parent::prepare($sql, $options);
     }
 }
