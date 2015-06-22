@@ -24,7 +24,7 @@ class LoggingPDO extends PDO
     public function query($sql)
     {
         if ($this->outputQueries) {
-            $this->outputQueries->writeln('query: ' . $sql);
+            $this->outputQueries->writeln(PHP_EOL . '<info>query: ' . $sql . '</info>');
         }
         return parent::query($sql);
     }
