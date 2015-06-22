@@ -33,6 +33,7 @@ abstract class AbstractCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($input->getOption('show-sql')) {
+            $this->container['output'] = $output;
             $this->db->setOutputQueries($output);
         }
     }

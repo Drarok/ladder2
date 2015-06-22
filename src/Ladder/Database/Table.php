@@ -55,6 +55,13 @@ class Table
     protected $constraints;
 
     /**
+     * Last insert id.
+     *
+     * @var integer
+     */
+    protected $lastInsertId;
+
+    /**
      * Factory.
      *
      * @param string $name Name of the table.
@@ -240,7 +247,7 @@ class Table
     /**
      * Create the table.
      *
-     * @return void
+     * @return $this
      */
     public function create()
     {
@@ -274,12 +281,14 @@ class Table
         $this->db->query($sql);
 
         $this->clear();
+
+        return $this;
     }
 
     /**
      * Alter the table.
      *
-     * @return void
+     * @return $this
      */
     public function alter()
     {
@@ -320,12 +329,14 @@ class Table
         ));
 
         $this->clear();
+
+        return $this;
     }
 
     /**
      * Drop the table.
      *
-     * @return void
+     * @return $this
      */
     public function drop()
     {
@@ -335,6 +346,137 @@ class Table
         );
 
         $this->db->query($sql);
+
+        return $this;
+    }
+
+    /**
+     * Insert a row to the table.
+     *
+     * @param array $data Table data, column => value.
+     *
+     * @return $this
+     */
+    public function insert(array $data)
+    {
+        $columns = array_map(
+            function ($column) {
+                return '`' . $column . '`';
+            },
+            array_keys($data)
+        );
+
+        $placeholders = array_map(
+            function ($column) {
+                return ':' . $column;
+            },
+            array_keys($data)
+        );
+
+        $sql = sprintf(
+            'INSERT INTO `%s` (%s) VALUES (%s)',
+            $this->getName(),
+            implode(', ', $columns),
+            implode(', ', $placeholders)
+        );
+
+        if (!$this->db->prepare($sql)->execute($data)) {
+            // TODO: Improve this.
+            throw new \Exception('Failed to insert?!');
+        }
+
+        $this->lastInsertId = (int) $this->db->lastInsertId();
+
+        return $this;
+    }
+
+    /**
+     * Update data in the table.
+     *
+     * @param array $data  Table data, column => value.
+     * @param array $where Where clauses, column => value.
+     *
+     * @return $this
+     */
+    public function update(array $data, array $where)
+    {
+        $sql = sprintf(
+            'UPDATE `%s` SET %s WHERE %s',
+            $this->getName(),
+            $this->generateClauses($data, ', ', 'data_'),
+            $this->generateClauses($where, ' AND ', 'where_')
+        );
+
+        $params = [];
+
+        foreach ($data as $key => $value) {
+            $params['data_' . $key] = $value;
+        }
+
+        foreach ($where as $key => $value) {
+            $params['where_' . $key] = $value;
+        }
+
+        if (!$this->db->prepare($sql)->execute($params)) {
+            // TODO: Improve this.
+            throw new \Exception('Failed to update?!');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Delete data from the table.
+     *
+     * @param array $where Where clauses, column => value.
+     *
+     * @return $this
+     */
+    public function delete(array $where)
+    {
+        $sql = sprintf(
+            'DELETE FROM `%s` WHERE %s',
+            $this->getName(),
+            $this->generateClauses($where, ' AND ')
+        );
+
+        if (!$this->db->prepare($sql)->execute($where)) {
+            // TODO: Improve this.
+            throw new \Exception('Failed to delete?!');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the last insert id.
+     *
+     * @return int
+     */
+    public function getLastInsertId()
+    {
+        return $this->lastInsertId;
+    }
+
+    /**
+     * Generate clauses.
+     *
+     * @param array  $where       Array of key => value pairs to use.
+     * @param string $join        String to use between clauses.
+     * @param string $paramPrefix Prefix for the parameters.
+     *
+     * @return string
+     */
+    protected function generateClauses(array $where, $join, $paramPrefix = '')
+    {
+        $clauses = array_map(
+            function ($column) use ($paramPrefix) {
+                return sprintf('`%s` = :%s', $column, $paramPrefix . $column);
+            },
+            array_keys($where)
+        );
+
+        return implode($join, $clauses);
     }
 
     /**
