@@ -2,9 +2,11 @@
 
 namespace Ladder;
 
-use PDO;
 use Pimple;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\InputOption;
+
+use Ladder\PDO\LoggingPDO;
 
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     // Composer autoload for developing Ladder.
@@ -21,15 +23,15 @@ $container['rootPath'] = __DIR__;
 $container['db'] = $container->share(function ($container) {
     $config = $container['config']['db'];
 
-    return new PDO(
+    return new LoggingPDO(
         $config['dsn'],
         $config['username'],
         $config['password'],
         array(
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_STRINGIFY_FETCHES  => false,
+            LoggingPDO::ATTR_DEFAULT_FETCH_MODE => LoggingPDO::FETCH_ASSOC,
+            LoggingPDO::ATTR_EMULATE_PREPARES   => false,
+            LoggingPDO::ATTR_ERRMODE            => LoggingPDO::ERRMODE_EXCEPTION,
+            LoggingPDO::ATTR_STRINGIFY_FETCHES  => false,
         )
     );
 });
@@ -53,6 +55,15 @@ $container['migrationManager'] = $container->share(function ($container) {
 
 $container['app'] = $container->share(function ($container) {
     $app = new Application('Ladder', Version::getVersion());
+
+    // Add global option for showing SQL.
+    $input = $app->getDefinition();
+    $input->addOption(new InputOption(
+        'show-sql',
+        's',
+        InputOption::VALUE_NONE,
+        'Output SQL statements before running them.'
+    ));
 
     $app->addCommands(array(
         new Command\CreateCommand($container),
