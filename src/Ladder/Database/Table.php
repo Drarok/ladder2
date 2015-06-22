@@ -240,7 +240,7 @@ class Table
     /**
      * Create the table.
      *
-     * @return void
+     * @return $this
      */
     public function create()
     {
@@ -274,12 +274,14 @@ class Table
         $this->db->query($sql);
 
         $this->clear();
+
+        return $this;
     }
 
     /**
      * Alter the table.
      *
-     * @return void
+     * @return $this
      */
     public function alter()
     {
@@ -320,12 +322,14 @@ class Table
         ));
 
         $this->clear();
+
+        return $this;
     }
 
     /**
      * Drop the table.
      *
-     * @return void
+     * @return $this
      */
     public function drop()
     {
@@ -335,6 +339,8 @@ class Table
         );
 
         $this->db->query($sql);
+
+        return $this;
     }
 
     /**
