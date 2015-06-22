@@ -385,7 +385,7 @@ class Table
 
         }
 
-        $this->lastInsertId = $this->db->lastInsertId();
+        $this->lastInsertId = (int) $this->db->lastInsertId();
 
         return $this;
     }
