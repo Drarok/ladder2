@@ -29,4 +29,11 @@ abstract class AbstractCommand extends Command
     {
         return $this->container[$key];
     }
+
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        if ($input->getOption('show-sql')) {
+            $this->db->setOutputQueries($output);
+        }
+    }
 }

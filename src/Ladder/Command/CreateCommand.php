@@ -29,6 +29,8 @@ class CreateCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        parent::execute($input, $output);
+
         $config = $this->config;
 
         if (count($config['migrations']) > 1) {

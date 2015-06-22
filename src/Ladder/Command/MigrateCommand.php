@@ -32,6 +32,8 @@ class MigrateCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        parent::execute($input, $output);
+
         Table::setDefaultDb($this->db);
 
         $manager = $this->migrationManager;

@@ -18,6 +18,8 @@ class StatusCommand extends AbstractCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        parent::execute($input, $output);
+
         $verbose = $input->getOption('verbose');
 
         $output->writeln('<comment>Status</comment>');
