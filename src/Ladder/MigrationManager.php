@@ -69,7 +69,7 @@ class MigrationManager
      *
      * @return int
      */
-    public function getCurrentMigration()
+    public function getCurrentMigrationId()
     {
         if (! $this->hasMigrationsTable()) {
             return 0;

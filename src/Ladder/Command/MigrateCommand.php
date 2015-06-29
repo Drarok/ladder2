@@ -38,7 +38,7 @@ class MigrateCommand extends AbstractCommand
 
         $manager = $this->migrationManager;
 
-        $source = $manager->getCurrentMigration();
+        $source = $manager->getCurrentMigrationId();
         $destination = $input->getArgument('migration');
 
         if ($destination === 'latest') {
