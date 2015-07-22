@@ -331,6 +331,8 @@ class MigrationManager
                     continue;
                 }
 
+                require_once $fileInfo->getPathname();
+
                 $class = $namespace . '\\' . $fileInfo->getBasename('.php');
                 $migration = new $class($this->container);
 

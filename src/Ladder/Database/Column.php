@@ -64,6 +64,11 @@ class Column
 
         if ($limit = Arr::get($this->options, 'limit')) {
             $sql .= sprintf('(%s)', $limit);
+        } elseif ($options = Arr::get($this->options, 'options')) {
+            foreach ($options as &$option) {
+                $option = '\'' . str_replace('\'', '\\\'', $option) . '\'';
+            }
+            $sql .= sprintf('(%s)', implode(', ', $options));
         }
 
         if (Arr::get($this->options, 'unsigned')) {
