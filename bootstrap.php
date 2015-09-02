@@ -68,8 +68,9 @@ $container['app'] = $container->share(function ($container) {
 
     $app->addCommands(array(
         new Command\CreateCommand($container),
-        new Command\StatusCommand($container),
         new Command\MigrateCommand($container),
+        new Command\ReapplyCommand($container),
+        new Command\StatusCommand($container),
     ));
 
     return $app;

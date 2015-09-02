@@ -3,9 +3,8 @@
 namespace Ladder\Migration\System;
 
 use Ladder\Database\Table;
-use Ladder\Migration\AbstractMigration;
 
-class Migration1 extends AbstractMigration
+class Migration1 extends AbstractSystemMigration
 {
     public function getName()
     {
