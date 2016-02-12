@@ -4,11 +4,12 @@ namespace Zerifas\Ladder\Command;
 
 use InvalidArgumentException;
 
-use Zerifas\Ladder\Path;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use Zerifas\Ladder\Path;
 
 class CreateCommand extends AbstractCommand
 {

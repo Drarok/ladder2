@@ -7,10 +7,10 @@ use Zerifas\Ladder\Command\CreateCommand;
 use Zerifas\Ladder\Command\MigrateCommand;
 use Zerifas\Ladder\Command\ReapplyCommand;
 use Zerifas\Ladder\Command\StatusCommand;
-use Zerifas\Ladder\PDO\LoggingPDO;
-use Zerifas\Ladder\Version;
 use Zerifas\Ladder\MigrationManager;
 use Zerifas\Ladder\Path;
+use Zerifas\Ladder\PDO\LoggingPDO;
+use Zerifas\Ladder\Version;
 
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     // Composer autoload for developing Ladder.

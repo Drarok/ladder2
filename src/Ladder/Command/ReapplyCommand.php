@@ -4,12 +4,13 @@ namespace Zerifas\Ladder\Command;
 
 use InvalidArgumentException;
 
-use Zerifas\Ladder\Database\Table;
-use Zerifas\Ladder\Migration\System\AbstractSystemMigration;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use Zerifas\Ladder\Database\Table;
+use Zerifas\Ladder\Migration\System\AbstractSystemMigration;
 
 class ReapplyCommand extends AbstractCommand
 {

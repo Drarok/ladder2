@@ -6,8 +6,9 @@ use DirectoryIterator;
 use Exception;
 use InvalidArgumentException;
 
-use Zerifas\Ladder\Migration\AbstractMigration;
 use Pimple;
+
+use Zerifas\Ladder\Migration\AbstractMigration;
 
 class MigrationManager
 {
