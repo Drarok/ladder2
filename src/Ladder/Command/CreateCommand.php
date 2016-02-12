@@ -1,8 +1,8 @@
 <?php
 
-namespace Ladder\Command;
+namespace Zerifas\Ladder\Command;
 
-use Ladder\Path;
+use Zerifas\Ladder\Path;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

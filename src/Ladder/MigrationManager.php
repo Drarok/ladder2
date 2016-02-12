@@ -1,15 +1,20 @@
 <?php
 
-namespace Ladder;
+namespace Zerifas\Ladder;
 
-use Ladder\Migration\AbstractMigration;
+use DirectoryIterator;
+use Exception;
+use InvalidArgumentException;
+
+use Zerifas\Ladder\Migration\AbstractMigration;
+use Pimple;
 
 class MigrationManager
 {
     /**
      * Container.
      *
-     * @var \Pimple
+     * @var Pimple
      */
     protected $container;
 
@@ -25,7 +30,7 @@ class MigrationManager
      *
      * @param Pimple $container Container.
      */
-    public function __construct(\Pimple $container)
+    public function __construct(Pimple $container)
     {
         $this->container = $container;
     }
@@ -53,7 +58,7 @@ class MigrationManager
     public function addNamespace($namespace, $path)
     {
         if (array_key_exists($namespace, $this->paths)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Namespace \'%s\' is already registered.',
                 $namespace
             ));
@@ -193,7 +198,7 @@ class MigrationManager
         try {
             $data = $migration->apply();
             $migration->setAppliedAt($appliedAt);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // TODO: Tidy up.
             throw $e;
         }
@@ -243,7 +248,7 @@ class MigrationManager
         try {
             $migration->rollback($data);
             $migration->setAppliedAt(null);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // TODO: Tidy up.
             throw $e;
         }
@@ -309,7 +314,7 @@ class MigrationManager
 
         foreach ($this->paths as $namespace => $path) {
             if (! $path) {
-                throw new \InvalidArgumentException('Invalid migrations path.');
+                throw new InvalidArgumentException('Invalid migrations path.');
             }
 
             // Convert relative paths into absolute.
@@ -318,10 +323,10 @@ class MigrationManager
             }
 
             if (! is_dir($path)) {
-                throw new \InvalidArgumentException('Invalid migrations path: ' . $path);
+                throw new InvalidArgumentException('Invalid migrations path: ' . $path);
             }
 
-            $dir = new \DirectoryIterator($path);
+            $dir = new DirectoryIterator($path);
             foreach ($dir as $fileInfo) {
                 if ($dir->isDot()) {
                     continue;

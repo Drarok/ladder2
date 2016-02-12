@@ -1,8 +1,8 @@
 <?php
 
-namespace Ladder\Migration\System;
+namespace Zerifas\Ladder\Migration\System;
 
-use Ladder\Database\Table;
+use Zerifas\Ladder\Database\Table;
 
 class Migration1 extends AbstractSystemMigration
 {

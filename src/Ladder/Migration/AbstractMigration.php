@@ -1,6 +1,6 @@
 <?php
 
-namespace Ladder\Migration;
+namespace Zerifas\Ladder\Migration;
 
 use Pimple;
 

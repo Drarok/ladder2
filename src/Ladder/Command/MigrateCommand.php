@@ -1,9 +1,9 @@
 <?php
 
-namespace Ladder\Command;
+namespace Zerifas\Ladder\Command;
 
-use Ladder\Database\Table;
-use Ladder\MigrationManager;
+use Zerifas\Ladder\Database\Table;
+use Zerifas\Ladder\MigrationManager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

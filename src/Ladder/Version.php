@@ -1,6 +1,6 @@
 <?php
 
-namespace Ladder;
+namespace Zerifas\Ladder;
 
 class Version
 {

@@ -2,8 +2,8 @@
 
 namespace {{ namespace }};
 
-use Ladder\Database\Table;
-use Ladder\Migration\AbstractMigration;
+use Zerifas\Ladder\Database\Table;
+use Zerifas\Ladder\Migration\AbstractMigration;
 
 class Migration{{ id }} extends AbstractMigration
 {

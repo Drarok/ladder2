@@ -1,8 +1,8 @@
 <?php
 
-namespace Ladder\Database;
+namespace Zerifas\Ladder\Database;
 
-use Ladder\Arr;
+use Zerifas\Ladder\Arr;
 
 class Column
 {

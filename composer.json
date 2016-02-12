@@ -10,7 +10,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Ladder\\": "src/Ladder/"
+            "Zerifas\\Ladder\\": "src/Ladder/"
         }
     },
     "bin": [

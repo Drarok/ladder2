@@ -1,11 +1,13 @@
 #!/usr/bin/env php
 <?php
 
+use Zerifas\Ladder\Path;
+
 define('LADDER_BIN_PATH', __DIR__);
 
 $container = require_once LADDER_BIN_PATH . '/../bootstrap.php';
 
-$configPathname = Ladder\Path::join(getcwd(), 'ladder.json');
+$configPathname = Path::join(getcwd(), 'ladder.json');
 
 if (! is_file($configPathname)) {
     echo 'No such file: ' . $configPathname, PHP_EOL;

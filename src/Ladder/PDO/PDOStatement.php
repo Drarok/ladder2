@@ -1,6 +1,6 @@
 <?php
 
-namespace Ladder\PDO;
+namespace Zerifas\Ladder\PDO;
 
 use Pimple;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ladder\Database;
+namespace Zerifas\Ladder\Database;
 
 use PDO;
 
