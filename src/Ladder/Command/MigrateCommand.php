@@ -117,7 +117,7 @@ class MigrateCommand extends AbstractCommand
         ));
 
         // Grab the applied migrations, and reverse-sort.
-        $appliedMigrations = array();
+        $appliedMigrations = [];
         foreach ($manager->getAppliedMigrations() as $migration) {
             $appliedMigrations[$migration->getId()] = $migration;
         }

@@ -14,10 +14,10 @@ class Migration1 extends AbstractSystemMigration
     public function apply()
     {
         Table::factory('ladder:migrations')
-            ->addColumn('id', 'integer', array('null' => false, 'unsigned' => true))
-            ->addColumn('appliedAt', 'datetime', array('null' => false))
+            ->addColumn('id', 'integer', ['null' => false, 'unsigned' => true])
+            ->addColumn('appliedAt', 'datetime', ['null' => false])
             ->addColumn('data', 'text')
-            ->addIndex('PRIMARY', array('id'))
+            ->addIndex('PRIMARY', ['id'])
             ->create()
         ;
     }

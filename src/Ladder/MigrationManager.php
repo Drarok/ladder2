@@ -18,7 +18,7 @@ class MigrationManager
      *
      * @var array
      */
-    protected $paths = array();
+    protected $paths = [];
 
     /**
      * Constructor.
@@ -101,7 +101,7 @@ class MigrationManager
      */
     public function getAllMigrations()
     {
-        $result = array();
+        $result = [];
         foreach ($this->findAllMigrations() as $migration) {
             $result[$migration->getId()] = $migration;
         }
@@ -127,7 +127,7 @@ class MigrationManager
      */
     public function getAvailableMigrations()
     {
-        $result = array();
+        $result = [];
         foreach ($this->findAllMigrations() as $migration) {
             if (! $migration->isApplied()) {
                 $result[$migration->getId()] = $migration;
@@ -160,7 +160,7 @@ class MigrationManager
      */
     public function getAppliedMigrations()
     {
-        $result = array();
+        $result = [];
         foreach ($this->findAllMigrations() as $migration) {
             if ($migration->isApplied()) {
                 $result[$migration->getId()] = $migration;
@@ -212,11 +212,11 @@ class MigrationManager
             )'
         );
 
-        $stmt->execute(array(
+        $stmt->execute([
             'id'        => $migration->getId(),
             'appliedAt' => $appliedAt,
             'data'      => json_encode($data),
-        ));
+        ]);
     }
 
     public function rollbackMigration(AbstractMigration $migration)
@@ -232,9 +232,9 @@ class MigrationManager
                 1'
         );
 
-        $stmt->execute(array(
+        $stmt->execute([
             'id' => $migration->getId(),
-        ));
+        ]);
 
         if ($data = $stmt->fetchColumn()) {
             $data = json_decode($data, true);
@@ -257,9 +257,9 @@ class MigrationManager
                     `id` = :id'
             );
 
-            $stmt->execute(array(
+            $stmt->execute([
                 'id' => $migration->getId(),
-            ));
+            ]);
         }
     }
 
@@ -287,7 +287,7 @@ class MigrationManager
     protected function findAllMigrations()
     {
         // Grab all the appliedAt dates in one go for efficiency's sake.
-        $appliedMigrations = array();
+        $appliedMigrations = [];
 
         if ($this->hasMigrationsTable()) {
             $stmt = $this->db->query(
@@ -305,7 +305,7 @@ class MigrationManager
             }
         }
 
-        $migrations = array();
+        $migrations = [];
 
         foreach ($this->paths as $namespace => $path) {
             if (! $path) {
