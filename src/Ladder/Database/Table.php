@@ -2,6 +2,7 @@
 
 namespace Zerifas\Ladder\Database;
 
+use Exception;
 use PDO;
 
 class Table
@@ -382,7 +383,7 @@ class Table
 
         if (!$this->db->prepare($sql)->execute($data)) {
             // TODO: Improve this.
-            throw new \Exception('Failed to insert?!');
+            throw new Exception('Failed to insert?!');
         }
 
         $this->lastInsertId = (int) $this->db->lastInsertId();
@@ -419,7 +420,7 @@ class Table
 
         if (!$this->db->prepare($sql)->execute($params)) {
             // TODO: Improve this.
-            throw new \Exception('Failed to update?!');
+            throw new Exception('Failed to update?!');
         }
 
         return $this;
@@ -442,7 +443,7 @@ class Table
 
         if (!$this->db->prepare($sql)->execute($where)) {
             // TODO: Improve this.
-            throw new \Exception('Failed to delete?!');
+            throw new Exception('Failed to delete?!');
         }
 
         return $this;

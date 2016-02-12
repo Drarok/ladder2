@@ -2,6 +2,8 @@
 
 namespace Zerifas\Ladder\Command;
 
+use InvalidArgumentException;
+
 use Zerifas\Ladder\Path;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -37,7 +39,7 @@ class CreateCommand extends AbstractCommand
             $namespace = $input->getArgument('namespace');
 
             if (! $namespace) {
-                throw new \InvalidArgumentException(
+                throw new InvalidArgumentException(
                     'You must specify the namespace when you have multiple configured.'
                 );
             }
@@ -51,7 +53,7 @@ class CreateCommand extends AbstractCommand
             }
 
             if ($path === false) {
-                throw new \InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(sprintf(
                     'Failed to find namespace \'%s\' in config.',
                     $namespace
                 ));
@@ -73,7 +75,7 @@ class CreateCommand extends AbstractCommand
     protected function createTemplateFile($name, $namespace, $path)
     {
         if (! is_dir($path) || ! is_writable($path)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                 'Path does not exist or is not writable: \'%s\'.',
                 $path
             ));
