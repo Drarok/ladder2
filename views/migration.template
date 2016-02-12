@@ -15,8 +15,8 @@ class Migration{{ id }} extends AbstractMigration
     public function apply()
     {
         Table::factory('{{ table }}')
-            ->addColumn('id', 'autoincrement', array('null' => false, 'unsigned' => true))
-            ->addIndex('PRIMARY', array('id'))
+            ->addColumn('id', 'autoincrement', ['null' => false, 'unsigned' => true])
+            ->addIndex('PRIMARY', ['id'])
             ->create()
         ;
     }
