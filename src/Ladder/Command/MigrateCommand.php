@@ -1,13 +1,16 @@
 <?php
 
-namespace Ladder\Command;
+namespace Zerifas\Ladder\Command;
 
-use Ladder\Database\Table;
-use Ladder\MigrationManager;
+use InvalidArgumentException;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use Zerifas\Ladder\Database\Table;
+use Zerifas\Ladder\MigrationManager;
 
 class MigrateCommand extends AbstractCommand
 {
@@ -47,7 +50,7 @@ class MigrateCommand extends AbstractCommand
 
         if ($destination < $source) {
             if (! $input->getOption('rollback')) {
-                throw new \InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(sprintf(
                     'Refusing to roll back from %d to %d without --rollback option for safety.',
                     $source,
                     $destination

@@ -1,8 +1,8 @@
 <?php
 
-namespace Ladder\Migration\System;
+namespace Zerifas\Ladder\Migration\System;
 
-use Ladder\Migration\AbstractMigration;
+use Zerifas\Ladder\Migration\AbstractMigration;
 
 abstract class AbstractSystemMigration extends AbstractMigration
 {

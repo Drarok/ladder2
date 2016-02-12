@@ -1,10 +1,12 @@
 <?php
 
-namespace Ladder\PDO;
+namespace Zerifas\Ladder\PDO;
+
+use PDOStatement as BasePDOStatement;
 
 use Pimple;
 
-class PDOStatement extends \PDOStatement
+class PDOStatement extends BasePDOStatement
 {
     /**
      * Constructor is required, but must not be public.

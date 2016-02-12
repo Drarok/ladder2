@@ -1,6 +1,6 @@
 <?php
 
-namespace Ladder;
+namespace Zerifas\Ladder;
 
 abstract class Path
 {

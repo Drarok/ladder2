@@ -1,12 +1,16 @@
 <?php
 
-namespace Ladder;
-
-use Pimple;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputOption;
 
-use Ladder\PDO\LoggingPDO;
+use Zerifas\Ladder\Command\CreateCommand;
+use Zerifas\Ladder\Command\MigrateCommand;
+use Zerifas\Ladder\Command\ReapplyCommand;
+use Zerifas\Ladder\Command\StatusCommand;
+use Zerifas\Ladder\MigrationManager;
+use Zerifas\Ladder\Path;
+use Zerifas\Ladder\PDO\LoggingPDO;
+use Zerifas\Ladder\Version;
 
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     // Composer autoload for developing Ladder.
@@ -32,7 +36,7 @@ $container['db'] = $container->share(function ($container) {
             LoggingPDO::ATTR_EMULATE_PREPARES   => false,
             LoggingPDO::ATTR_ERRMODE            => LoggingPDO::ERRMODE_EXCEPTION,
             LoggingPDO::ATTR_STRINGIFY_FETCHES  => false,
-            LoggingPDO::ATTR_STATEMENT_CLASS    => ['Ladder\\PDO\\PDOStatement', [$container]],
+            LoggingPDO::ATTR_STATEMENT_CLASS    => ['Zerifas\\Ladder\\PDO\\PDOStatement', [$container]],
         ]
     );
 });
@@ -42,7 +46,7 @@ $container['migrationManager'] = $container->share(function ($container) {
 
     // Always add in the Ladder migrations path.
     $manager->addNamespace(
-        'Ladder\\Migration\\System',
+        'Zerifas\\Ladder\\Migration\\System',
         Path::join($container['rootPath'], 'src/Ladder/Migration/System')
     );
 
@@ -67,10 +71,10 @@ $container['app'] = $container->share(function ($container) {
     ));
 
     $app->addCommands([
-        new Command\CreateCommand($container),
-        new Command\MigrateCommand($container),
-        new Command\ReapplyCommand($container),
-        new Command\StatusCommand($container),
+        new CreateCommand($container),
+        new MigrateCommand($container),
+        new ReapplyCommand($container),
+        new StatusCommand($container),
     ]);
 
     return $app;

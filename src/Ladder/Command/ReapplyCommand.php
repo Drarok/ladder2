@@ -1,13 +1,16 @@
 <?php
 
-namespace Ladder\Command;
+namespace Zerifas\Ladder\Command;
 
-use Ladder\Database\Table;
-use Ladder\Migration\System\AbstractSystemMigration;
+use InvalidArgumentException;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+
+use Zerifas\Ladder\Database\Table;
+use Zerifas\Ladder\Migration\System\AbstractSystemMigration;
 
 class ReapplyCommand extends AbstractCommand
 {
@@ -43,7 +46,7 @@ class ReapplyCommand extends AbstractCommand
         }
 
         if ($migration instanceof AbstractSystemMigration) {
-            throw new \InvalidArgumentException('You cannot reapply a Ladder system migration');
+            throw new InvalidArgumentException('You cannot reapply a Ladder system migration');
         }
 
         if ($migration->isApplied()) {
