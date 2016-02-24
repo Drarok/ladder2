@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Zerifas\Ladder\Command\CreateCommand;
 use Zerifas\Ladder\Command\MigrateCommand;
 use Zerifas\Ladder\Command\ReapplyCommand;
+use Zerifas\Ladder\Command\RemoveCommand;
 use Zerifas\Ladder\Command\StatusCommand;
 use Zerifas\Ladder\MigrationManager;
 use Zerifas\Ladder\Path;
@@ -74,6 +75,7 @@ $container['app'] = $container->share(function ($container) {
         new CreateCommand($container),
         new MigrateCommand($container),
         new ReapplyCommand($container),
+        new RemoveCommand($container),
         new StatusCommand($container),
     ]);
 
