@@ -86,7 +86,7 @@ class MigrateCommand extends AbstractCommand
             }
 
             $output->write(sprintf(
-                '<info>Applying %d: <comment>%s</comment>: </info>',
+                '<info>Applying %d - <comment>%s</comment>: </info>',
                 $migration->getId(),
                 $migration->getName()
             ));
@@ -119,20 +119,14 @@ class MigrateCommand extends AbstractCommand
             $destination
         ));
 
-        // Grab the applied migrations, and reverse-sort.
-        $appliedMigrations = [];
+        // Iterate over applied migrations (they're already reverse-sorted).
         foreach ($manager->getAppliedMigrations() as $migration) {
-            $appliedMigrations[$migration->getId()] = $migration;
-        }
-        krsort($appliedMigrations);
-
-        foreach ($appliedMigrations as $migration) {
             if ($migration->getId() <= $destination) {
                 break;
             }
 
             $output->write(sprintf(
-                '<info>Rolling back %d: <comment>%s</comment>: </info>',
+                '<info>Rolling back %d - <comment>%s</comment>: </info>',
                 $migration->getId(),
                 $migration->getName()
             ));

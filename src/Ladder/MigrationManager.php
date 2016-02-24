@@ -116,6 +116,27 @@ class MigrationManager
     }
 
     /**
+     * Get a migration by its id.
+     *
+     * @param int $id Migration id.
+     *
+     * @return AbstractMigration
+     */
+    public function getMigrationById($id)
+    {
+        $allMigrations = $this->getAllMigrations();
+
+        if (! array_key_exists($id, $allMigrations)) {
+            throw new InvalidArgumentException(sprintf(
+                'No such migration: %d',
+                $id
+            ));
+        }
+
+        return $allMigrations[$id];
+    }
+
+    /**
      * Get the latest migration.
      *
      * @return AbstractMigration
