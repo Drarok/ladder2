@@ -41,8 +41,7 @@ class ReapplyCommand extends AbstractCommand
         if ($migrationId === 'latest') {
             $migration = $manager->getLatestMigration();
         } else {
-            $allMigrations = $manager->getAllMigrations();
-            $migration = $allMigrations[$migrationId];
+            $migration = $manager->getMigrationById($migrationId);
         }
 
         if ($migration instanceof AbstractSystemMigration) {

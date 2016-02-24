@@ -119,14 +119,8 @@ class MigrateCommand extends AbstractCommand
             $destination
         ));
 
-        // Grab the applied migrations, and reverse-sort.
-        $appliedMigrations = [];
+        // Iterate over applied migrations (they're already reverse-sorted).
         foreach ($manager->getAppliedMigrations() as $migration) {
-            $appliedMigrations[$migration->getId()] = $migration;
-        }
-        krsort($appliedMigrations);
-
-        foreach ($appliedMigrations as $migration) {
             if ($migration->getId() <= $destination) {
                 break;
             }
