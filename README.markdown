@@ -21,6 +21,14 @@ is run when the migration is applied, and `rollback()` when it is un-applied.
 Logically, a `rollback()` method should do the opposite to its counterpart `apply()`
 method; Dropping a column instead of adding it, etc.
 
+## What is supported?
+
+* Creating and dropping tables
+* Adding, dropping, and altering columns
+* Adding and dropping indexes/constraints
+* Data operations: insert/update/delete
+* Storing metadata when applying a migration, and using it during roll back
+
 ## How do I use it?
 
 You can add Ladder to your project using Composer:
@@ -30,7 +38,7 @@ $ composer require zerifas/ladder
 $ edit ladder.json
 ```
 
-Your `ladder.json` file should look like this:
+Your `ladder.json` file should look something like this:
 
 ```json
 {
@@ -48,7 +56,19 @@ Your `ladder.json` file should look like this:
 }
 ```
 
-Now, you should be able to run Ladder to create a template file:
+Now, you should be able to run Ladder:
+
+```bash
+$ vendor/bin/ladder status
+Status
+    Missing Migrations
+        1 - Ladder internal tables
+$ vendor/bin/ladder migrate
+Migrate from 0 to 1
+Applying 1 - Ladder internal tables: OK
+```
+
+You can get Ladder to create a template file for you:
 
 ```bash
 $ vendor/bin/ladder create 'Create user table'
@@ -59,24 +79,38 @@ The template shows an example of creating and dropping a table, edit and save th
 
 ```bash
 $ vendor/bin/ladder migrate
-Migrate from 0 to 1455898526
-Applying 1: Ladder internal tables: OK
-Applying 1455898526: Create user table: OK
+Migrate from 1 to 1455898526
+Applying 1455898526 - Create user table: OK
 ```
 
 Additionally, you can provide a migration id to the `migrate` command in order to migrate to that specific point.
 
 The `migrate` command can be used to migrate to an _older_ migration only when given the `--rollback` option. This is to avoid accidentally dropping tables or columns.
 
-## What is supported?
+### Commands
 
-* Creating and dropping tables
-* Adding, dropping, and altering columns
-* Adding and dropping indexes/constraints
-* Data operations: insert/update/delete
-* Storing metadata when applying a migration, and using it during roll back
+Ladder aims to be self-documenting in use (though we need documentation for the Migration methods):
 
-## Examples
+```bash
+$ vendor/bin/ladder
+Ladder version 2.0.0-alpha
+
+Usage:
+  [options] command [arguments]
+
+…
+
+Available commands:
+  create    Create a new Migration file.
+  help      Displays help for a command
+  list      Lists commands
+  migrate   Migrate to the latest, or specified migration number.
+  reapply   Rollback the given migration (if applied), then apply it.
+  remove    Rollback a single migration.
+  status    Show the current status of the database.
+```
+
+## Example Migration
 
 Here's an example that does _way_ too much for a single Migration, but should cover all the use cases.
 
