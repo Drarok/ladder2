@@ -51,7 +51,7 @@ class ReapplyCommand extends AbstractCommand
 
         if ($migration->isApplied()) {
             $output->write(sprintf(
-                '<info>Rolling back %d: <comment>%s</comment>: </info>',
+                '<info>Rolling back %d - <comment>%s</comment>: </info>',
                 $migration->getId(),
                 $migration->getName()
             ));
@@ -60,7 +60,7 @@ class ReapplyCommand extends AbstractCommand
         }
 
         $output->write(sprintf(
-            '<info>Applying %d: <comment>%s</comment>: </info>',
+            '<info>Applying %d - <comment>%s</comment>: </info>',
             $migration->getId(),
             $migration->getName()
         ));

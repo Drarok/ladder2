@@ -36,7 +36,7 @@ class StatusCommand extends AbstractCommand
 
             foreach ($allMigrations as $id => $migration) {
                 $output->writeln(sprintf(
-                    '    %2$d: <fg=%1$s>%3$s %4$s</fg=%1$s>',
+                    '    %2$d - <fg=%1$s>%3$s %4$s</fg=%1$s>',
                     $migration->isApplied() ? 'green' : 'red',
                     $migration->getId(),
                     $migration->getName(),
@@ -47,7 +47,7 @@ class StatusCommand extends AbstractCommand
             $output->writeln('    <comment>Missing Migrations</comment>');
             foreach ($manager->getAvailableMigrations() as $migration) {
                 $output->writeln(sprintf(
-                    '        %d: <fg=red>%s</fg=red>',
+                    '        %d - <fg=red>%s</fg=red>',
                     $migration->getId(),
                     $migration->getName()
                 ));
