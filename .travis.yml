@@ -11,3 +11,4 @@ install:
 
 script:
   - vendor/bin/phpcs --standard=PSR2 bin/ src/
+  - vendor/bin/phpunit
