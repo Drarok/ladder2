@@ -2,11 +2,11 @@
 
 namespace Zerifas\LadderTests;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit_Framework_TestCase;
 
 use Zerifas\Ladder\Arr;
 
-class ArrTest extends TestCase
+class ArrTest extends PHPUnit_Framework_TestCase
 {
     private static $data = [
         'key1' => 'value1',
