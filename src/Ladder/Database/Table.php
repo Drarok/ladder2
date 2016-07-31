@@ -460,6 +460,19 @@ class Table
     }
 
     /**
+     * Import a file to the table.
+     *
+     * @param string $pathname Pathname of the file to import.
+     *
+     * @return $this
+     */
+    public function import($pathname)
+    {
+        // TODO: Implement this
+        return $this;
+    }
+
+    /**
      * Generate clauses.
      *
      * @param array  $where       Array of key => value pairs to use.
