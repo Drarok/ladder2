@@ -20,5 +20,9 @@
         "php": ">=5.4",
         "pimple/pimple": "1.*",
         "symfony/console": "2.4.*"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^2.6",
+        "phpunit/phpunit": "^4.8"
     }
 }
