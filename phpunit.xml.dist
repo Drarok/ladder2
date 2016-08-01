@@ -12,7 +12,7 @@
     <whitelist processUncoveredFilesFromWhitelist="true">
       <directory suffix=".php">src</directory>
       <exclude>
-        <directory suffix=".php">src/Ladder/Migration</directory>
+        <directory suffix=".php">src/Ladder/Command</directory>
       </exclude>
     </whitelist>
   </filter>
