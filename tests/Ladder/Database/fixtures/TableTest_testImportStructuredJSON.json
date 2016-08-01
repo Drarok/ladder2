@@ -6,6 +6,6 @@
   ],
   "data": [
     [1, "Alice", "Developer"],
-    [2, "Bob", "Junior Developer"]
+    [2, "Bob", null]
   ]
 }
