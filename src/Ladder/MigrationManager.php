@@ -336,7 +336,10 @@ class MigrationManager
 
         foreach ($this->paths as $namespace => $path) {
             if (! $path) {
-                throw new InvalidArgumentException('Invalid migrations path.');
+                throw new InvalidArgumentException(sprintf(
+                    'Missing migrations path for namespace \'%s\'.',
+                    $namespace
+                ));
             }
 
             // Convert relative paths into absolute.
@@ -345,7 +348,11 @@ class MigrationManager
             }
 
             if (! is_dir($path)) {
-                throw new InvalidArgumentException('Invalid migrations path: ' . $path);
+                throw new InvalidArgumentException(sprintf(
+                    'Invalid migrations path for namespace \'%s\': \'%s\'',
+                    $namespace,
+                    $path
+                ));
             }
 
             $dir = new DirectoryIterator($path);
