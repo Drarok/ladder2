@@ -19,18 +19,23 @@ class TableTest extends PHPUnit_Framework_TestCase
             $this->markTestSkipped('This test requires PHP >= 5.6');
         }
 
+
         // This won't work in PHP 5.5 and earlier, with error:
         // "You cannot serialize or unserialize PDO instances"
-        return $this->getMockBuilder('PDO')
+        $db = $this->getMockBuilder('PDO')
             ->disableOriginalConstructor()
             ->getMock()
         ;
+
+        Table::setDefaultDb($db);
+
+        return $db;
     }
 
     protected function getMockTableForImport()
     {
         $table = $this->getMockBuilder('Zerifas\\Ladder\\Database\\Table')
-            ->setConstructorArgs(['users', $this->getMockDb()])
+            ->setConstructorArgs(['users'])
             ->setMethods(['insert'])
             ->getMock()
         ;
@@ -59,6 +64,14 @@ class TableTest extends PHPUnit_Framework_TestCase
         return $table;
     }
 
+    public function testImportInvalidFile()
+    {
+        $this->setExpectedException('InvalidArgumentException', 'Invalid file extension: invalid');
+        Table::factory('users')
+            ->import(__DIR__ . '/fixtures/TableTest_testImportNO_SUCH_FILE.invalid')
+        ;
+    }
+
     public function testImportCSV()
     {
         $this->getMockTableForImport()
@@ -85,10 +98,12 @@ class TableTest extends PHPUnit_Framework_TestCase
         $sql = implode(PHP_EOL, [
             'CREATE TABLE `users` (',
             '    `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,',
+            '    `groupId` INTEGER UNSIGNED,',
             '    `name` VARCHAR(30) NOT NULL,',
             '    `occupation` VARCHAR(30),',
             '    PRIMARY KEY (`id`),',
-            '    KEY `name` (`name`)',
+            '    KEY `name` (`name`),',
+            '    CONSTRAINT `users:groupId::groups:id` FOREIGN KEY (`groupId`) REFERENCES `groups` (`id`)',
             ')',
         ]);
 
@@ -102,10 +117,12 @@ class TableTest extends PHPUnit_Framework_TestCase
 
         Table::factory('users', $db)
             ->addColumn('id', 'autoincrement', ['unsigned' => true])
+            ->addColumn('groupId', 'integer', ['unsigned' => true])
             ->addColumn('name', 'varchar', ['limit' => 30, 'null' => false])
             ->addColumn('occupation', 'varchar', ['limit' => 30])
             ->addIndex('PRIMARY', ['id'])
             ->addIndex('name')
+            ->addConstraint(['groupId'], 'groups', ['id'])
             ->create()
         ;
     }
@@ -119,7 +136,10 @@ class TableTest extends PHPUnit_Framework_TestCase
             '    CHANGE COLUMN `created` `createdAt` DATETIME,',
             '    ADD COLUMN `age` INTEGER UNSIGNED,',
             '    DROP KEY `name`,',
-            '    ADD KEY `age` (`age`)',
+            '    ADD KEY `age` (`age`),',
+            '    DROP FOREIGN KEY `users:groupId::groups:id`,',
+            '    DROP FOREIGN KEY `customFK`,',
+            '    ADD CONSTRAINT `users:groupUUID::groups:uuid` FOREIGN KEY (`groupUUID`) REFERENCES `groups` (`uuid`)',
         ]);
 
         $db = $this->getMockDb();
@@ -137,6 +157,9 @@ class TableTest extends PHPUnit_Framework_TestCase
             ->dropIndex('name')
             ->addColumn('age', 'integer', ['unsigned' => true])
             ->addIndex('age')
+            ->dropConstraint(['groupId'], 'groups', ['id'])
+            ->dropConstraintByName('customFK')
+            ->addConstraint(['groupUUID'], 'groups', ['uuid'])
             ->alter()
         ;
     }
@@ -155,6 +178,35 @@ class TableTest extends PHPUnit_Framework_TestCase
 
         Table::factory('users', $db)
             ->drop()
+        ;
+    }
+
+    public function testInsertFailure()
+    {
+        $this->setExpectedException('Exception', 'Failed to insert?!');
+
+        $stmt = $this->getMockBuilder('PDOStatement')
+            ->getMock()
+        ;
+
+        $stmt
+            ->expects($this->once())
+            ->method('execute')
+            ->willReturn(false)
+        ;
+
+        $db = $this->getMockDb();
+        $db
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($stmt)
+        ;
+
+        Table::factory('users', $db)
+            ->insert([
+                'id'   => 1,
+                'name' => 'Alice',
+            ])
         ;
     }
 
@@ -177,6 +229,10 @@ class TableTest extends PHPUnit_Framework_TestCase
 
         $db = $this->getMockDb();
 
+        $db->method('lastInsertId')
+            ->willReturn(42)
+        ;
+
         $db
             ->expects($this->once())
             ->method('prepare')
@@ -184,11 +240,48 @@ class TableTest extends PHPUnit_Framework_TestCase
             ->willReturn($stmt)
         ;
 
-        Table::factory('users', $db)
+        $lastId = Table::factory('users', $db)
             ->insert([
                 'id'   => 1,
                 'name' => 'Alice',
             ])
+            ->getLastInsertId()
+        ;
+
+        $this->assertSame(42, $lastId);
+    }
+
+    public function testUpdateFailure()
+    {
+        $this->setExpectedException('Exception', 'Failed to update?!');
+
+        $stmt = $this->getMockBuilder('PDOStatement')
+            ->getMock()
+        ;
+        $stmt
+            ->expects($this->once())
+            ->method('execute')
+            ->willReturn(false)
+        ;
+
+        $db = $this->getMockDb();
+
+        $db
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($stmt)
+        ;
+
+        Table::factory('users', $db)
+            ->update(
+                [
+                    'id'   => 2,
+                    'name' => 'Eva',
+                ],
+                [
+                    'id'   => 1,
+                ]
+            )
         ;
     }
 
@@ -232,6 +325,34 @@ class TableTest extends PHPUnit_Framework_TestCase
         ;
     }
 
+    public function testDeleteFailure()
+    {
+        $this->setExpectedException('Exception', 'Failed to delete?!');
+
+        $stmt = $this->getMockBuilder('PDOStatement')
+            ->getMock()
+        ;
+        $stmt
+            ->expects($this->once())
+            ->method('execute')
+            ->willReturn(false)
+        ;
+
+        $db = $this->getMockDb();
+
+        $db
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($stmt)
+        ;
+
+        Table::factory('users', $db)
+            ->delete([
+                'id' => 1,
+            ])
+        ;
+    }
+
     public function testDelete()
     {
         $sql = 'DELETE FROM `users` WHERE `id` = :id';
@@ -259,7 +380,7 @@ class TableTest extends PHPUnit_Framework_TestCase
 
         Table::factory('users', $db)
             ->delete([
-                'id'   => 1,
+                'id' => 1,
             ])
         ;
     }
