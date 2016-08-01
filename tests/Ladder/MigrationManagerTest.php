@@ -8,7 +8,7 @@ use Pimple;
 use Zerifas\Ladder\MigrationManager;
 
 /**
- * @requires PHP 5.5
+ * @requires PHP 5.6
  */
 class MigrationManagerTest extends PHPUnit_Framework_TestCase
 {

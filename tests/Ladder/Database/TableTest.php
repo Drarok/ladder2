@@ -6,6 +6,9 @@ use PHPUnit_Framework_TestCase;
 
 use Zerifas\Ladder\Database\Table;
 
+/**
+ * @requires PHP 5.6
+ */
 class TableTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()
@@ -15,13 +18,6 @@ class TableTest extends PHPUnit_Framework_TestCase
 
     protected function getMockDb()
     {
-        if (! version_compare(PHP_VERSION, '5.6', '>=')) {
-            $this->markTestSkipped('This test requires PHP >= 5.6');
-        }
-
-
-        // This won't work in PHP 5.5 and earlier, with error:
-        // "You cannot serialize or unserialize PDO instances"
         $db = $this->getMockBuilder('PDO')
             ->disableOriginalConstructor()
             ->getMock()
