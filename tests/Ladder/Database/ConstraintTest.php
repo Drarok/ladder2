@@ -27,6 +27,7 @@ class ConstraintTest extends PHPUnit_Framework_TestCase
         $expected = 'CONSTRAINT `users::groups` FOREIGN KEY (`groupId`) REFERENCES `groups` (`id`) ' .
             'ON DELETE RESTRICT ON UPDATE CASCADE';
         $this->assertEquals($expected, $constraint->getCreateSQL());
+        $this->assertEquals('ADD ' . $expected, $constraint->getAddSQL());
     }
 
     public function testDrop()
