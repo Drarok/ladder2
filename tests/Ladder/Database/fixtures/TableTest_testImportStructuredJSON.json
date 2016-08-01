@@ -1,0 +1,11 @@
+{
+  "columns": [
+    "id",
+    "name",
+    "occupation"
+  ],
+  "data": [
+    [1, "Alice", "Developer"],
+    [2, "Bob", "Junior Developer"]
+  ]
+}
