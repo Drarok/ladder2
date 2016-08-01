@@ -8,13 +8,20 @@ use Zerifas\Ladder\Database\Table;
 
 class TableTest extends PHPUnit_Framework_TestCase
 {
-    protected $db;
-
     protected function setUp()
     {
         parent::setUp();
+    }
 
-        $this->db = $this->getMockBuilder('PDO')
+    protected function getMockDb()
+    {
+        if (! version_compare(PHP_VERSION, '5.6', '>=')) {
+            $this->markTestSkipped('This test requires PHP >= 5.6');
+        }
+
+        // This won't work in PHP 5.5 and earlier, with error:
+        // "You cannot serialize or unserialize PDO instances"
+        return $this->getMockBuilder('PDO')
             ->disableOriginalConstructor()
             ->getMock()
         ;
@@ -23,7 +30,7 @@ class TableTest extends PHPUnit_Framework_TestCase
     protected function getMockTableForImport()
     {
         $table = $this->getMockBuilder('Zerifas\\Ladder\\Database\\Table')
-            ->setConstructorArgs(['users', $this->db])
+            ->setConstructorArgs(['users', $this->getMockDb()])
             ->setMethods(['insert'])
             ->getMock()
         ;
@@ -85,13 +92,15 @@ class TableTest extends PHPUnit_Framework_TestCase
             ')',
         ]);
 
-        $this->db
+        $db = $this->getMockDb();
+
+        $db
             ->expects($this->once())
             ->method('query')
             ->with($sql)
         ;
 
-        Table::factory('users', $this->db)
+        Table::factory('users', $db)
             ->addColumn('id', 'autoincrement', ['unsigned' => true])
             ->addColumn('name', 'varchar', ['limit' => 30, 'null' => false])
             ->addColumn('occupation', 'varchar', ['limit' => 30])
@@ -113,13 +122,15 @@ class TableTest extends PHPUnit_Framework_TestCase
             '    ADD KEY `age` (`age`)',
         ]);
 
-        $this->db
+        $db = $this->getMockDb();
+
+        $db
             ->expects($this->once())
             ->method('query')
             ->with($sql)
         ;
 
-        Table::factory('users', $this->db)
+        Table::factory('users', $db)
             ->dropColumn('name', 'varchar', ['limit' => 30, 'null' => false])
             ->alterColumn('occupation', 'varchar', ['limit' => 30])
             ->alterColumn('created', 'datetime', ['name' => 'createdAt'])
@@ -134,13 +145,15 @@ class TableTest extends PHPUnit_Framework_TestCase
     {
         $sql = 'DROP TABLE `users`';
 
-        $this->db
+        $db = $this->getMockDb();
+
+        $db
             ->expects($this->once())
             ->method('query')
             ->with($sql)
         ;
 
-        Table::factory('users', $this->db)
+        Table::factory('users', $db)
             ->drop()
         ;
     }
@@ -162,14 +175,16 @@ class TableTest extends PHPUnit_Framework_TestCase
             ->willReturn(true)
         ;
 
-        $this->db
+        $db = $this->getMockDb();
+
+        $db
             ->expects($this->once())
             ->method('prepare')
             ->with($sql)
             ->willReturn($stmt)
         ;
 
-        Table::factory('users', $this->db)
+        Table::factory('users', $db)
             ->insert([
                 'id'   => 1,
                 'name' => 'Alice',
@@ -195,14 +210,16 @@ class TableTest extends PHPUnit_Framework_TestCase
             ->willReturn(true)
         ;
 
-        $this->db
+        $db = $this->getMockDb();
+
+        $db
             ->expects($this->once())
             ->method('prepare')
             ->with($sql)
             ->willReturn($stmt)
         ;
 
-        Table::factory('users', $this->db)
+        Table::factory('users', $db)
             ->update(
                 [
                     'id'   => 2,
@@ -231,14 +248,16 @@ class TableTest extends PHPUnit_Framework_TestCase
             ->willReturn(true)
         ;
 
-        $this->db
+        $db = $this->getMockDb();
+
+        $db
             ->expects($this->once())
             ->method('prepare')
             ->with($sql)
             ->willReturn($stmt)
         ;
 
-        Table::factory('users', $this->db)
+        Table::factory('users', $db)
             ->delete([
                 'id'   => 1,
             ])
