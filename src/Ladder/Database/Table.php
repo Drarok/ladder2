@@ -462,13 +462,28 @@ class Table
     /**
      * Import a file to the table.
      *
-     * @param string $pathname Pathname of the file to import.
+     * @param string $pathname Pathname of the file to import. Supports CSV and JSON.
      *
      * @return $this
      */
     public function import($pathname)
     {
-        // TODO: Implement this
+        $fileInfo = new \SplFileInfo($pathname);
+
+        switch (strtolower($fileInfo->getExtension())) {
+            case 'csv':
+                $this->importCSV($pathname);
+                break;
+
+            case 'json':
+                $this->importJSON($pathname);
+                break;
+
+            default:
+                throw new \Exception(sprintf('Invalid file extension: %s', $fileInfo->getExtension()));
+                break;
+        }
+
         return $this;
     }
 
@@ -535,5 +550,63 @@ class Table
             $referenceTable,
             implode(':', $referenceColumns)
         );
+    }
+
+    /**
+     * Import a CSV file into this table.
+     *
+     * @param string $pathname Pathname of the file to import.
+     *
+     * @return void
+     */
+    protected function importCSV($pathname)
+    {
+        $file = fopen($pathname, 'r');
+
+        $columns = null;
+
+        $nullify = function ($value) {
+            return $value === 'null' ? null : $value;
+        };
+
+        while (($row = fgetcsv($file, 0, ',', '"', '"')) !== false) {
+            // Skip blank lines (represented as [null] by fgetcsv).
+            if (count($row) === 1 && $row[0] === null) {
+                continue;
+            }
+
+            if ($columns === null) {
+                $columns = $row;
+                continue;
+            }
+
+            $this->insert(array_combine($columns, array_map($nullify, $row)));
+        }
+
+        fclose($file);
+    }
+
+    /**
+     * Import a JSON file into this table.
+     *
+     * @param string $pathname Pathname of the file to import.
+     *
+     * @return void
+     */
+    protected function importJSON($pathname)
+    {
+        $json = json_decode(file_get_contents($pathname), true);
+
+        if (isset($json['columns']) && isset($json['data'])) {
+            $columns = $json['columns'];
+
+            foreach ($json['data'] as $row) {
+                $this->insert(array_combine($columns, $row));
+            }
+        } else {
+            foreach ($json as $row) {
+                $this->insert($row);
+            }
+        }
     }
 }
