@@ -21,8 +21,8 @@
       <directory suffix=".php">src</directory>
       <exclude>
         <directory suffix=".php">src/Ladder/Command</directory>
+        <directory suffix=".php">src/Ladder/Migration/System</directory>
         <directory suffix=".php">src/Ladder/PDO</directory>
-        <file>src/Ladder/Migration/System/Migration1.php</file>
       </exclude>
     </whitelist>
   </filter>
