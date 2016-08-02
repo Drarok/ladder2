@@ -480,7 +480,10 @@ class Table
                 break;
 
             default:
-                throw new \Exception(sprintf('Invalid file extension: %s', $fileInfo->getExtension()));
+                throw new \InvalidArgumentException(sprintf(
+                    'Invalid file extension: %s',
+                    $fileInfo->getExtension()
+                ));
                 break;
         }
 
