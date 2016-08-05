@@ -135,7 +135,7 @@ class TableTest extends PHPUnit_Framework_TestCase
             '    ADD KEY `age` (`age`),',
             '    DROP FOREIGN KEY `users:groupId::groups:id`,',
             '    DROP FOREIGN KEY `customFK`,',
-            '    ADD CONSTRAINT `users:groupUUID::groups:uuid` FOREIGN KEY (`groupUUID`) REFERENCES `groups` (`uuid`)',
+            '    ADD CONSTRAINT `users::groups` FOREIGN KEY (`groupUUID`) REFERENCES `groups` (`uuid`)',
         ]);
 
         $db = $this->getMockDb();
@@ -155,7 +155,7 @@ class TableTest extends PHPUnit_Framework_TestCase
             ->addIndex('age')
             ->dropConstraint(['groupId'], 'groups', ['id'])
             ->dropConstraintByName('customFK')
-            ->addConstraint(['groupUUID'], 'groups', ['uuid'])
+            ->addConstraint(['groupUUID'], 'groups', ['uuid'], ['name' => 'users::groups'])
             ->alter()
         ;
     }
