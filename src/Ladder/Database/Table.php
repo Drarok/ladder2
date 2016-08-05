@@ -204,7 +204,11 @@ class Table
      */
     public function addConstraint(array $columns, $referenceTable, array $referenceColumns, array $options = [])
     {
-        $name = $this->generateConstraintName($columns, $referenceTable, $referenceColumns);
+        if (array_key_exists('name', $options)) {
+            $name = $options['name'];
+        } else {
+            $name = $this->generateConstraintName($columns, $referenceTable, $referenceColumns);
+        }
 
         $this->constraints['add'][$name] = new Constraint(
             $name,
@@ -213,6 +217,7 @@ class Table
             $referenceColumns,
             $options
         );
+
         return $this;
     }
 
