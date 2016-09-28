@@ -1,6 +1,8 @@
 {
     "db": {
-        "dsn": "mysql:host=localhost;dbname=test;charset=utf8;",
+        "hostname": "127.0.0.1",
+        "dbname": "test2",
+        "charset": "utf8",
         "username": "root",
         "password": ""
     },
