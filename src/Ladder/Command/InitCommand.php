@@ -45,8 +45,17 @@ class InitCommand extends AbstractCommand
             $config['dbname']
         ));
 
-        if (! $stmt->fetch()) {
+        if ($stmt->fetch()) {
+            $output->writeln(sprintf(
+                '<info>Database \'%s\' already exists.</info>',
+                $config['dbname']
+            ));
+        } else {
             $db->exec(sprintf('CREATE DATABASE `%s`', $config['dbname']));
+            $output->writeln(sprintf(
+                '<info>Created database \'%s\'.</info>',
+                $config['dbname']
+            ));
         }
     }
 }
