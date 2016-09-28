@@ -90,14 +90,21 @@ $container['dispatcher'] = $container->share(function ($container) {
 
         $config = $container['config'];
         if (array_key_exists('dsn', $config['db'])) {
-            $output->writeln('<comment>Warning: the `dsn` config option is deprecated</comment>');
+            $output->writeln('<comment>Warning: the \'dsn\' config option is deprecated</comment>');
+
+            // Define defaults.
+            $defaults = [
+                'hostname' => '',
+                'dbname'   => '',
+                'charset'  => 'utf8',
+            ];
 
             // Decompose the dsn option into its component parts.
             if (! preg_match_all('/(\w+)=(.*?)(?:;|$)/', $config['db']['dsn'], $matches, PREG_SET_ORDER)) {
-                throw new InvalidArgumentException('Failed to parse deprecated `dsn` config option');
+                throw new InvalidArgumentException('Failed to parse deprecated \'dsn\' config option');
             }
 
-            // Assign each part back into the config.
+            // Set defaults from the parsed data.
             foreach ($matches as $match) {
                 $key = $match[1];
                 $value = $match[2];
@@ -106,13 +113,15 @@ $container['dispatcher'] = $container->share(function ($container) {
                     $key = 'hostname';
                 }
 
-                if (! array_key_exists($key, $config['db'])) {
-                    $config['db'][$key] = $value;
-                }
+                $defaults[$key] = $value;
             }
 
-            // Remove deprecated option.
-            unset($config['db']['dsn']);
+            // Merge the config in to allow users to "win" over our parsing.
+            $options = array_merge($defaults, $config['db']);
+
+            // Remove deprecated option, replace config.
+            unset($options['dsn']);
+            $config['db'] = $options;
 
             // Assign the now-updated config back to the container.
             $container['config'] = $config;
