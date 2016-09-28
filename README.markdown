@@ -38,12 +38,14 @@ $ composer require zerifas/ladder
 $ edit ladder.json
 ```
 
-Your `ladder.json` file should look something like this:
+Your `ladder.json` file should look something like this the included `ladder.json.sample`:
 
 ```json
 {
     "db": {
-        "dsn": "mysql:host=localhost;dbname=YOUR_DATABASE;charset=utf8;",
+        "hostname": "localhost",
+        "dbname": "YOUR_DATABASE",
+        "charset": "utf8",
         "username": "privileged_user",
         "password": "G00D_P@ssw0rd%"
     },
@@ -56,7 +58,14 @@ Your `ladder.json` file should look something like this:
 }
 ```
 
-Now, you should be able to run Ladder:
+If your database does not exist, and your user has access to create it, `init` will do so:
+
+```bash
+$ vendor/bin/ladder init
+Created database 'test2'.
+```
+
+Now, you should be able to run the `status` command to see what's not applied, and `migrate` to apply changes.
 
 ```bash
 $ vendor/bin/ladder status
@@ -68,7 +77,7 @@ Migrate from 0 to 1
 Applying 1 - Ladder internal tables: OK
 ```
 
-You can get Ladder to create a template file for you:
+You can get Ladder to create a migration template file for you:
 
 ```bash
 $ vendor/bin/ladder create 'Create user table'
@@ -93,7 +102,7 @@ Ladder aims to be self-documenting in use (though we need documentation for the 
 
 ```bash
 $ vendor/bin/ladder
-Ladder version 2.0.0-alpha
+Ladder version 2.1.0
 
 Usage:
   [options] command [arguments]
@@ -101,13 +110,14 @@ Usage:
 …
 
 Available commands:
-  create    Create a new Migration file.
-  help      Displays help for a command
-  list      Lists commands
-  migrate   Migrate to the latest, or specified migration number.
-  reapply   Rollback the given migration (if applied), then apply it.
-  remove    Rollback a single migration.
-  status    Show the current status of the database.
+  create   Create a new Migration file.
+  help     Displays help for a command
+  init     Attempt to create the configured database.
+  list     Lists commands
+  migrate  Migrate to the latest, or specified migration number.
+  reapply  Rollback the given migration (if applied), then apply it.
+  remove   Rollback a single migration.
+  status   Show the current status of the database.
 ```
 
 ## Example Migration
