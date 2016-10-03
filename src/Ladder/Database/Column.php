@@ -65,9 +65,9 @@ class Column
         if ($limit = Arr::get($this->options, 'limit')) {
             $sql .= sprintf('(%s)', $limit);
         } elseif ($options = Arr::get($this->options, 'options')) {
-            foreach ($options as &$option) {
-                $option = '\'' . str_replace('\'', '\\\'', $option) . '\'';
-            }
+            $options = array_map(function ($option) {
+                return '\'' . str_replace('\'', '\\\'', $option) . '\'';
+            }, $options);
             $sql .= sprintf('(%s)', implode(', ', $options));
         }
 
