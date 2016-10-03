@@ -48,6 +48,22 @@ class ColumnTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $column->getCreateSQL());
     }
 
+    public function testFalsyIntegerDefault()
+    {
+        $column = new Column('admin', 'tinyint', ['null' => false, 'unsigned' => true, 'default' => 0]);
+
+        $expected = '`admin` TINYINT UNSIGNED NOT NULL DEFAULT 0';
+        $this->assertEquals($expected, $column->getCreateSQL());
+    }
+
+    public function testFalsyStringDefault()
+    {
+        $column = new Column('usergroup', 'varchar', ['null' => false, 'limit' => 30, 'default' => '']);
+
+        $expected = '`usergroup` VARCHAR(30) NOT NULL DEFAULT \'\'';
+        $this->assertEquals($expected, $column->getCreateSQL());
+    }
+
     public function testAfter()
     {
         $column = new Column('notes', 'text', ['after' => 'usertype']);
