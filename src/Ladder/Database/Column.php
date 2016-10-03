@@ -84,7 +84,8 @@ class Column
             $sql .= ' AUTO_INCREMENT';
         }
 
-        if ($default = Arr::get($this->options, 'default')) {
+        if (array_key_exists('default', $options)) {
+            $default = Arr::get($this->options, 'default');
             if (! is_numeric($default)) {
                 $default = '\'' . str_replace('\'', '\\\'', $default) . '\'';
             }
