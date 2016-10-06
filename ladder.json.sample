@@ -1,6 +1,6 @@
 {
     "db": {
-        "hostname": "127.0.0.1",
+        "host": "127.0.0.1",
         "dbname": "test2",
         "charset": "utf8",
         "username": "root",
