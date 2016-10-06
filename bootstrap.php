@@ -34,19 +34,19 @@ $container['configValidator'] = $container->share(function ($container) {
     $schema = new JSON\Object([
         'db'         => new JSON\Object([
             // Deprecated options.
-            'dsn'      => new JSON\OptionalString(),
-            'hostname' => new JSON\OptionalString(),
+            'dsn'      => new JSON\OptionalStr(),
+            'hostname' => new JSON\OptionalStr(),
 
             // Current options - optional as we transition to them.
-            'host'     => new JSON\OptionalString(),
-            'dbname'   => new JSON\OptionalString(),
-            'charset'  => new JSON\OptionalString('utf8'),
-            'username' => new JSON\String(),
-            'password' => new JSON\String(),
+            'host'     => new JSON\OptionalStr(),
+            'dbname'   => new JSON\OptionalStr(),
+            'charset'  => new JSON\OptionalStr('utf8'),
+            'username' => new JSON\Str(),
+            'password' => new JSON\Str(),
         ]),
         'migrations' => new JSON\Arr(new JSON\Object([
-            'namespace' => new JSON\String(),
-            'path'      => new JSON\String(),
+            'namespace' => new JSON\Str(),
+            'path'      => new JSON\Str(),
         ])),
     ]);
 
@@ -65,7 +65,54 @@ $container['config'] = $container->share(function ($container) {
         throw new Exception('Invalid config: ' . implode(', ', $validator->getErrors()));
     }
 
-    return $validator->getDocument();
+    $config = $validator->getDocument();
+
+    // Handle deprecated options, and put warnings into an array which will be displayed
+    // to users using the event dispatcher (else we can't access the OutputInterface).
+    $warnings = [];
+
+    if ($config->db->dsn !== null) {
+        $warnings[] = 'Warning: db.dsn config option is deprecated.';
+
+        // Define defaults.
+        $defaults = [
+            'host'    => '',
+            'dbname'  => '',
+            'charset' => 'utf8',
+        ];
+
+        // Decompose the dsn option into its component parts.
+        if (! preg_match_all('/(\w+)=(.*?)(?:;|$)/', $config->db->dsn, $matches, PREG_SET_ORDER)) {
+            throw new InvalidArgumentException('Failed to parse deprecated \'dsn\' config option');
+        }
+
+        // Set defaults from the parsed data.
+        foreach ($matches as $match) {
+            $key = $match[1];
+            $value = $match[2];
+
+            $defaults[$key] = $value;
+        }
+
+        // Merge the config in to allow users to "win" over our parsing.
+        $options = array_merge($defaults, (array) $config->db);
+
+        // Remove deprecated option, replace db config.
+        unset($options['dsn']);
+        $config->db = (object) $options;
+    }
+
+    if ($config->db->hostname !== null) {
+        $warnings[] = 'Warning: db.hostname config option is deprecated.';
+        if ($config->db->host === null) {
+            $config->db->host = $config->db->hostname;
+            unset($config->db->hostname);
+        }
+    }
+
+    $container['warnings'] = $warnings;
+
+    return $config;
 });
 
 $container['db'] = $container->share(function ($container) {
@@ -102,8 +149,8 @@ $container['migrationManager'] = $container->share(function ($container) {
     );
 
     // Loop over configured namespaces and add those.
-    foreach ($container['config']['migrations'] as $migrations) {
-        $manager->addNamespace($migrations['namespace'], $migrations['path']);
+    foreach ($container['config']->migrations as $migrations) {
+        $manager->addNamespace($migrations->namespace, $migrations->path);
     }
 
     return $manager;
@@ -113,43 +160,16 @@ $container['dispatcher'] = $container->share(function ($container) {
     $dispatcher = new EventDispatcher();
 
     $dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $event) use ($container) {
+        // Make sure config is loaded.
+        $config = $container['config'];
+
         $output = $event->getOutput();
 
-        $config = $container['config'];
-        if ($config->db->dsn !== null) {
-            $output->writeln('<comment>Warning: the \'dsn\' config option is deprecated</comment>');
-
-            // Define defaults.
-            $defaults = [
-                'host'    => '',
-                'dbname'  => '',
-                'charset' => 'utf8',
-            ];
-
-            // Decompose the dsn option into its component parts.
-            if (! preg_match_all('/(\w+)=(.*?)(?:;|$)/', $config['db']['dsn'], $matches, PREG_SET_ORDER)) {
-                throw new InvalidArgumentException('Failed to parse deprecated \'dsn\' config option');
+        if (($warnings = $container['warnings'])) {
+            foreach ($warnings as $warning) {
+                $output->writeln(sprintf('<comment>%s</comment>', $warning));
             }
-
-            // Set defaults from the parsed data.
-            foreach ($matches as $match) {
-                $key = $match[1];
-                $value = $match[2];
-
-                $defaults[$key] = $value;
-            }
-
-            // Merge the config in to allow users to "win" over our parsing.
-            $options = array_merge($defaults, (array) $config->db);
-
-            // Remove deprecated option, replace config.
-            unset($options['dsn']);
-            $config->db = (object) $options;
-
-            // Assign the now-updated config back to the container.
-            $container['config'] = $config;
         }
-
     });
 
     return $dispatcher;
@@ -157,7 +177,6 @@ $container['dispatcher'] = $container->share(function ($container) {
 
 $container['app'] = $container->share(function ($container) {
     $app = new Application('Ladder', Version::getVersion());
-
     $app->setDispatcher($container['dispatcher']);
 
     // Add global option for showing SQL.
