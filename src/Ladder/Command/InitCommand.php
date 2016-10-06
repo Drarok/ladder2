@@ -24,17 +24,17 @@ class InitCommand extends AbstractCommand
 
         $verbose = $input->getOption('verbose');
 
-        $config = $this->container['config']['db'];
+        $config = $this->container['config']->db;
         $dsn = sprintf(
             'mysql:host=%s;charset=%s;',
-            $config['hostname'],
-            $config['charset']
+            $config->host,
+            $config->charset
         );
 
         $db = new PDO(
             $dsn,
-            $config['username'],
-            $config['password'],
+            $config->username,
+            $config->password,
             [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             ]
@@ -42,19 +42,19 @@ class InitCommand extends AbstractCommand
 
         $stmt = $db->query(sprintf(
             'SHOW DATABASES LIKE \'%s\'',
-            $config['dbname']
+            $config->dbname
         ));
 
         if ($stmt->fetch()) {
             $output->writeln(sprintf(
                 '<info>Database \'%s\' already exists.</info>',
-                $config['dbname']
+                $config->dbname
             ));
         } else {
-            $db->exec(sprintf('CREATE DATABASE `%s`', $config['dbname']));
+            $db->exec(sprintf('CREATE DATABASE `%s`', $config->dbname));
             $output->writeln(sprintf(
                 '<info>Created database \'%s\'.</info>',
-                $config['dbname']
+                $config->dbname
             ));
         }
     }

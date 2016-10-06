@@ -36,7 +36,7 @@ class CreateCommand extends AbstractCommand
 
         $config = $this->config;
 
-        if (count($config['migrations']) > 1) {
+        if (count($config->migrations) > 1) {
             $namespace = $input->getArgument('namespace');
 
             if (! $namespace) {
@@ -46,9 +46,9 @@ class CreateCommand extends AbstractCommand
             }
 
             $path = false;
-            foreach ($config['migrations'] as $migrationsConfig) {
-                if ($migrationsConfig['namespace'] == $namespace) {
-                    $path = $migrationsConfig['path'];
+            foreach ($config->migrations as $migrationsConfig) {
+                if ($migrationsConfig->namespace == $namespace) {
+                    $path = $migrationsConfig->path;
                     break;
                 }
             }
@@ -60,9 +60,9 @@ class CreateCommand extends AbstractCommand
                 ));
             }
         } else {
-            $migrationsConfig = $config['migrations'][0];
-            $namespace = $migrationsConfig['namespace'];
-            $path = $migrationsConfig['path'];
+            $migrationsConfig = $config->migrations[0];
+            $namespace = $migrationsConfig->namespace;
+            $path = $migrationsConfig->path;
         }
 
         $pathname = $this->createTemplateFile($input->getArgument('name'), $namespace, $path);

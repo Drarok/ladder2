@@ -6,6 +6,7 @@ use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
+use Zerifas\JSON;
 use Zerifas\Ladder\Command\CreateCommand;
 use Zerifas\Ladder\Command\InitCommand;
 use Zerifas\Ladder\Command\MigrateCommand;
@@ -29,6 +30,29 @@ $container = new Pimple();
 
 $container['rootPath'] = __DIR__;
 
+$container['configValidator'] = $container->share(function ($container) {
+    $schema = new JSON\Object([
+        'db'         => new JSON\Object([
+            // Deprecated options.
+            'dsn'      => new JSON\OptionalString(),
+            'hostname' => new JSON\OptionalString(),
+
+            // Current options - optional as we transition to them.
+            'host'     => new JSON\OptionalString(),
+            'dbname'   => new JSON\OptionalString(),
+            'charset'  => new JSON\OptionalString('utf8'),
+            'username' => new JSON\String(),
+            'password' => new JSON\String(),
+        ]),
+        'migrations' => new JSON\Arr(new JSON\Object([
+            'namespace' => new JSON\String(),
+            'path'      => new JSON\String(),
+        ])),
+    ]);
+
+    return new JSON\Validator($schema);
+});
+
 $container['config'] = $container->share(function ($container) {
     $configPathname = $container['configPathname'];
 
@@ -36,29 +60,32 @@ $container['config'] = $container->share(function ($container) {
         throw new Exception('No such file: ' . $configPathname);
     }
 
-    $config = json_decode(file_get_contents($configPathname), true);
+    $validator = $container['configValidator'];
+    if (! $validator->isValid(file_get_contents($configPathname))) {
+        throw new Exception('Invalid config: ' . implode(', ', $validator->getErrors()));
+    }
 
-    return $config;
+    return $validator->getDocument();
 });
 
 $container['db'] = $container->share(function ($container) {
-    $config = $container['config']['db'];
+    $config = $container['config']->db;
 
     $dsn = sprintf(
         'mysql:host=%s;dbname=%s;charset=%s;',
-        $config['hostname'],
-        $config['dbname'],
-        $config['charset']
+        $config->host,
+        $config->dbname,
+        $config->charset
     );
 
     return new LoggingPDO(
         $dsn,
-        $config['username'],
-        $config['password'],
+        $config->username,
+        $config->password,
         [
+            LoggingPDO::ATTR_ERRMODE            => LoggingPDO::ERRMODE_EXCEPTION,
             LoggingPDO::ATTR_DEFAULT_FETCH_MODE => LoggingPDO::FETCH_ASSOC,
             LoggingPDO::ATTR_EMULATE_PREPARES   => false,
-            LoggingPDO::ATTR_ERRMODE            => LoggingPDO::ERRMODE_EXCEPTION,
             LoggingPDO::ATTR_STRINGIFY_FETCHES  => false,
             LoggingPDO::ATTR_STATEMENT_CLASS    => ['Zerifas\\Ladder\\PDO\\PDOStatement', [$container]],
         ]
@@ -89,14 +116,14 @@ $container['dispatcher'] = $container->share(function ($container) {
         $output = $event->getOutput();
 
         $config = $container['config'];
-        if (array_key_exists('dsn', $config['db'])) {
+        if ($config->db->dsn !== null) {
             $output->writeln('<comment>Warning: the \'dsn\' config option is deprecated</comment>');
 
             // Define defaults.
             $defaults = [
-                'hostname' => '',
-                'dbname'   => '',
-                'charset'  => 'utf8',
+                'host'    => '',
+                'dbname'  => '',
+                'charset' => 'utf8',
             ];
 
             // Decompose the dsn option into its component parts.
@@ -109,19 +136,15 @@ $container['dispatcher'] = $container->share(function ($container) {
                 $key = $match[1];
                 $value = $match[2];
 
-                if ($key == 'host') {
-                    $key = 'hostname';
-                }
-
                 $defaults[$key] = $value;
             }
 
             // Merge the config in to allow users to "win" over our parsing.
-            $options = array_merge($defaults, $config['db']);
+            $options = array_merge($defaults, (array) $config->db);
 
             // Remove deprecated option, replace config.
             unset($options['dsn']);
-            $config['db'] = $options;
+            $config->db = (object) $options;
 
             // Assign the now-updated config back to the container.
             $container['config'] = $config;
