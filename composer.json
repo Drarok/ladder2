@@ -17,13 +17,14 @@
         "bin/ladder"
     ],
     "require": {
-        "php": ">=5.4",
-        "pimple/pimple": "1.*",
+        "php": ">=5.5",
+        "pimple/pimple": "^1.0",
         "symfony/console": "^2.8",
-        "symfony/event-dispatcher": "^2.8"
+        "symfony/event-dispatcher": "^2.8",
+        "zerifas/json": "^1.0"
     },
     "require-dev": {
-        "squizlabs/php_codesniffer": "^2.6",
-        "phpunit/phpunit": "^4.8"
+        "phpunit/phpunit": "^4.8",
+        "squizlabs/php_codesniffer": "^2.6"
     }
 }
