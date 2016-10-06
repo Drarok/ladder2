@@ -4,7 +4,7 @@
 
 Ladder started life many years ago as an extremely simple database migration system.
 It's grown over time to include a host of features, and had a ground-up rewrite to keep
-it modern (and remove use of the `mysql` extension). It's written for PHP >= 5.4, and
+it modern (and remove use of the `mysql` extension). It's written for PHP >= 5.5, and
 supports the popular MySQL database server via PDO.
 
 ## What would I use this for?
@@ -43,7 +43,7 @@ Your `ladder.json` file should look something like this the included `ladder.jso
 ```json
 {
     "db": {
-        "hostname": "localhost",
+        "host": "localhost",
         "dbname": "YOUR_DATABASE",
         "charset": "utf8",
         "username": "privileged_user",
