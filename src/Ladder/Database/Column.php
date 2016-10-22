@@ -92,7 +92,9 @@ class Column
             $sql .= sprintf(' DEFAULT %s', $default);
         }
 
-        if ($after = Arr::get($this->options, 'after')) {
+        if (Arr::get($this->options, 'first')) {
+            $sql .= ' FIRST';
+        } elseif ($after = Arr::get($this->options, 'after')) {
             $sql .= sprintf(' AFTER `%s`', $after);
         }
 
