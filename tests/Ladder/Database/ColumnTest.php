@@ -64,6 +64,14 @@ class ColumnTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $column->getCreateSQL());
     }
 
+    public function testFirst()
+    {
+        $column = new Column('notes', 'text', ['first' => true]);
+
+        $expected = '`notes` TEXT FIRST';
+        $this->assertEquals($expected, $column->getCreateSQL());
+    }
+
     public function testAfter()
     {
         $column = new Column('notes', 'text', ['after' => 'usertype']);

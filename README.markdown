@@ -168,6 +168,11 @@ class Migration1455898557 extends AbstractMigration
 
         // Create a user, and get its unique id.
         $users = Table::factory('users');
+        $users
+            ->addColumn('userGroup', 'integer', ['null' => false, 'default' => 0, 'first' => true])
+            ->addColumn('notes', 'text', ['after' => 'userGroup'])
+            ->alter()
+        ;
         $users->insert([
             'username' => '<username here>',
             'password' => '<some valid password hash>',
@@ -182,11 +187,18 @@ class Migration1455898557 extends AbstractMigration
 
     public function rollback(array $data = null)
     {
+        $users = Table::factory('users');
+
         if (is_array($data) && array_key_exists('userId', $data)) {
-            Table::factory('users')->delete([
+            $users->delete([
                 'id' => $data['userId'],
             ]);
         }
+
+        $users
+            ->dropColumn('notes')
+            ->dropColumn('userGroup')
+        ;
 
         Table::factory('posts')->drop();
     }
