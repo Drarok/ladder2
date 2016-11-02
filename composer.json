@@ -21,6 +21,7 @@
         "pimple/pimple": "^1.0",
         "symfony/console": "^2.8",
         "symfony/event-dispatcher": "^2.8",
+        "zerifas/collections": "^1.1",
         "zerifas/json": "^1.0"
     },
     "require-dev": {

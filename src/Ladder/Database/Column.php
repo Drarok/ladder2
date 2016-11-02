@@ -2,7 +2,7 @@
 
 namespace Zerifas\Ladder\Database;
 
-use Zerifas\Ladder\Arr;
+use Zerifas\Collections\Arr;
 
 class Column
 {

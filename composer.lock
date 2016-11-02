@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1abf97162a5503831d371ab77bf1d13e",
-    "content-hash": "ec6aac4afa2ca61590de496d2e3e7850",
+    "hash": "1a6d862fbabf19253265ec5e1436b92f",
+    "content-hash": "9dbc7d3f89eeb61d94f9a58da4bae885",
     "packages": [
         {
             "name": "pimple/pimple",
@@ -336,6 +336,46 @@
                 "shim"
             ],
             "time": "2016-05-18 14:26:46"
+        },
+        {
+            "name": "zerifas/collections",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Drarok/collections.git",
+                "reference": "ec38577bf3057258fe1aa943d75b5c5479d70510"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Drarok/collections/zipball/ec38577bf3057258fe1aa943d75b5c5479d70510",
+                "reference": "ec38577bf3057258fe1aa943d75b5c5479d70510",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">= 5.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8",
+                "squizlabs/php_codesniffer": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Zerifas\\Collections\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Mat Gadd",
+                    "email": "mat@zerifas.com"
+                }
+            ],
+            "description": "Tools for collections of data in PHP",
+            "time": "2016-11-02 15:18:41"
         },
         {
             "name": "zerifas/json",
