@@ -69,7 +69,7 @@ class MigrateCommand extends AbstractCommand
     {
         $manager = $this->migrationManager;
 
-        if (! $manager->hasAvailableMigrations() || $source == $destination) {
+        if (! $manager->hasAvailableMigrations()) {
             $output->writeln('<info>Already up-to-date.</info>');
             return;
         }
@@ -81,7 +81,7 @@ class MigrateCommand extends AbstractCommand
         ));
 
         foreach ($manager->getAvailableMigrations() as $migration) {
-            if ($destination !== 'latest' && $migration->getId() > $destination) {
+            if ($migration->getId() > $destination) {
                 break;
             }
 
