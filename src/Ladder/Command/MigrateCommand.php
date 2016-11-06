@@ -81,7 +81,7 @@ class MigrateCommand extends AbstractCommand
         ));
 
         foreach ($manager->getAvailableMigrations() as $migration) {
-            if ($destination !== 'latest' && $migration->getId() > $destination) {
+            if ($migration->getId() > $destination) {
                 break;
             }
 
