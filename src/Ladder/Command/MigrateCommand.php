@@ -69,7 +69,7 @@ class MigrateCommand extends AbstractCommand
     {
         $manager = $this->migrationManager;
 
-        if (! $manager->hasAvailableMigrations() || $source == $destination) {
+        if (! $manager->hasAvailableMigrations()) {
             $output->writeln('<info>Already up-to-date.</info>');
             return;
         }

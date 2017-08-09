@@ -6,7 +6,7 @@ use DirectoryIterator;
 use Exception;
 use InvalidArgumentException;
 
-use Pimple;
+use Pimple\Container;
 
 use Zerifas\Ladder\Migration\AbstractMigration;
 
@@ -15,7 +15,7 @@ class MigrationManager
     /**
      * Container.
      *
-     * @var Pimple
+     * @var Container
      */
     protected $container;
 
@@ -29,9 +29,9 @@ class MigrationManager
     /**
      * Constructor.
      *
-     * @param Pimple $container Container.
+     * @param Container $container Container.
      */
-    public function __construct(Pimple $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
     }

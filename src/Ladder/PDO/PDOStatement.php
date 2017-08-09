@@ -4,14 +4,14 @@ namespace Zerifas\Ladder\PDO;
 
 use PDOStatement as BasePDOStatement;
 
-use Pimple;
+use Pimple\Container;
 
 class PDOStatement extends BasePDOStatement
 {
     /**
      * Constructor is required, but must not be public.
      */
-    private function __construct(Pimple $container)
+    private function __construct(Container $container)
     {
         $this->container = $container;
     }

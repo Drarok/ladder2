@@ -1,5 +1,7 @@
 <?php
 
+use Pimple\Container;
+
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -26,11 +28,11 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/../../autoload.php';
 }
 
-$container = new Pimple();
+$container = new Container();
 
 $container['rootPath'] = __DIR__;
 
-$container['configValidator'] = $container->share(function ($container) {
+$container['configValidator'] = function ($container) {
     $schema = new JSON\Object([
         'db'         => new JSON\Object([
             // Deprecated options.
@@ -51,9 +53,9 @@ $container['configValidator'] = $container->share(function ($container) {
     ]);
 
     return new JSON\Validator($schema);
-});
+};
 
-$container['config'] = $container->share(function ($container) {
+$container['config'] = function ($container) {
     $configPathname = $container['configPathname'];
 
     if (! is_file($configPathname)) {
@@ -113,9 +115,9 @@ $container['config'] = $container->share(function ($container) {
     $container['warnings'] = $warnings;
 
     return $config;
-});
+};
 
-$container['db'] = $container->share(function ($container) {
+$container['db'] = function ($container) {
     $config = $container['config']->db;
 
     $dsn = sprintf(
@@ -137,9 +139,9 @@ $container['db'] = $container->share(function ($container) {
             LoggingPDO::ATTR_STATEMENT_CLASS    => ['Zerifas\\Ladder\\PDO\\PDOStatement', [$container]],
         ]
     );
-});
+};
 
-$container['migrationManager'] = $container->share(function ($container) {
+$container['migrationManager'] = function ($container) {
     $manager = new MigrationManager($container);
 
     // Always add in the Ladder migrations path.
@@ -154,9 +156,9 @@ $container['migrationManager'] = $container->share(function ($container) {
     }
 
     return $manager;
-});
+};
 
-$container['dispatcher'] = $container->share(function ($container) {
+$container['dispatcher'] = function ($container) {
     $dispatcher = new EventDispatcher();
 
     $dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $event) use ($container) {
@@ -173,9 +175,9 @@ $container['dispatcher'] = $container->share(function ($container) {
     });
 
     return $dispatcher;
-});
+};
 
-$container['app'] = $container->share(function ($container) {
+$container['app'] = function ($container) {
     $app = new Application('Ladder', Version::getVersion());
     $app->setDispatcher($container['dispatcher']);
 
@@ -198,6 +200,6 @@ $container['app'] = $container->share(function ($container) {
     ]);
 
     return $app;
-});
+};
 
 return $container;
