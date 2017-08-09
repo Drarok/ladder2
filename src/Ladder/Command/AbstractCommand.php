@@ -2,7 +2,7 @@
 
 namespace Zerifas\Ladder\Command;
 
-use Pimple;
+use Pimple\Container;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,7 +14,7 @@ abstract class AbstractCommand extends Command
 {
     protected $container;
 
-    public function __construct(Pimple $container, $name = null)
+    public function __construct(Container $container, $name = null)
     {
         parent::__construct($name);
         $this->container = $container;

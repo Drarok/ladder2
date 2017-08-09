@@ -1,6 +1,7 @@
 {
     "name": "zerifas/ladder",
     "description": "A database migration tool, written in PHP.",
+    "type": "library",
     "license": "MIT",
     "authors": [
         {
@@ -17,10 +18,10 @@
         "bin/ladder"
     ],
     "require": {
-        "php": ">=5.5",
-        "pimple/pimple": "^1.0",
-        "symfony/console": "^2.8",
+        "php": ">=5.6",
+        "pimple/pimple": "^3.0",
         "symfony/event-dispatcher": "^2.8",
+        "symfony/console": "^2.8",
         "zerifas/collections": "^1.1",
         "zerifas/json": "^1.0"
     },

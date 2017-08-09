@@ -2,14 +2,14 @@
 
 namespace Zerifas\Ladder\Migration;
 
-use Pimple;
+use Pimple\Container;
 
 abstract class AbstractMigration
 {
     /**
      * Dependency container;
      *
-     * @var Pimple
+     * @var Container
      */
     protected $container;
 
@@ -26,7 +26,7 @@ abstract class AbstractMigration
 
     abstract public function rollback(array $data = null);
 
-    public function __construct(Pimple $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
     }
