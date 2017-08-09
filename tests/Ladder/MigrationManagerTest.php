@@ -3,7 +3,7 @@
 namespace Zerifas\LadderTests;
 
 use PHPUnit_Framework_TestCase;
-use Pimple;
+use Pimple\Container;
 
 use Zerifas\Ladder\MigrationManager;
 
@@ -40,7 +40,7 @@ class MigrationManagerTest extends PHPUnit_Framework_TestCase
             ->willReturn($this->stmt)
         ;
 
-        $container = new Pimple();
+        $container = new Container();
         $container['db'] = $this->db;
 
         $this->manager = new MigrationManager($container);
