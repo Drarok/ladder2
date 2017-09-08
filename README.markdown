@@ -1,4 +1,4 @@
-# Ladder [![Build Status](https://travis-ci.org/Drarok/ladder2.svg?branch=develop)](https://travis-ci.org/Drarok/ladder2)
+# Ladder [![Build Status](https://travis-ci.org/Drarok/ladder2.svg?branch=develop)](https://travis-ci.org/Drarok/ladder2) [![Coverage Status](https://coveralls.io/repos/github/Drarok/ladder2/badge.svg?branch=develop)](https://coveralls.io/github/Drarok/ladder2?branch=develop)
 
 ## What is it?
 

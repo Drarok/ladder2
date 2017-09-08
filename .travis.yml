@@ -6,8 +6,11 @@ php:
   - '7.1'
 
 install:
-  - composer install
+  - composer install --no-interaction
 
 script:
   - vendor/bin/phpcs --standard=PSR2 bin/ src/
-  - vendor/bin/phpunit
+  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+
+after_success:
+  - travis_retry vendor/bin/coveralls
