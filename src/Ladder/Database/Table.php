@@ -489,7 +489,6 @@ class Table
                     'Invalid file extension: %s',
                     $fileInfo->getExtension()
                 ));
-                break;
         }
 
         return $this;
