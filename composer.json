@@ -23,7 +23,7 @@
         "symfony/event-dispatcher": "^2.8",
         "symfony/console": "^2.8",
         "zerifas/collections": "^1.1",
-        "zerifas/json": "^1.0"
+        "zerifas/json": "^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8",

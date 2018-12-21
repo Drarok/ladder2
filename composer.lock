@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "87a40e64357aefd97016d7e4e1ce55bb",
+    "content-hash": "cee7c65a9546eb9a73b8457dc538c395",
     "packages": [
         {
             "name": "pimple/pimple",
@@ -431,24 +431,25 @@
         },
         {
             "name": "zerifas/json",
-            "version": "1.0.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Drarok/json.git",
-                "reference": "aee7a448000b879f2ea8cdca652d8c7de97a3558"
+                "reference": "379031f9a71db8ce2882136a9cc2f57668fb5c19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Drarok/json/zipball/aee7a448000b879f2ea8cdca652d8c7de97a3558",
-                "reference": "aee7a448000b879f2ea8cdca652d8c7de97a3558",
+                "url": "https://api.github.com/repos/Drarok/json/zipball/379031f9a71db8ce2882136a9cc2f57668fb5c19",
+                "reference": "379031f9a71db8ce2882136a9cc2f57668fb5c19",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.5"
+                "php": ">=7.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8.27",
-                "squizlabs/php_codesniffer": "^2.7"
+                "php-coveralls/php-coveralls": "^1.0",
+                "phpunit/phpunit": "^6.5",
+                "squizlabs/php_codesniffer": "^3.2"
             },
             "type": "library",
             "autoload": {
@@ -464,7 +465,7 @@
                 }
             ],
             "description": "Define a schema for your JSON documents, and validate them",
-            "time": "2016-10-06T10:03:24+00:00"
+            "time": "2018-05-04T18:21:07+00:00"
         }
     ],
     "packages-dev": [

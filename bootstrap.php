@@ -33,8 +33,8 @@ $container = new Container();
 $container['rootPath'] = __DIR__;
 
 $container['configValidator'] = function ($container) {
-    $schema = new JSON\Object([
-        'db'         => new JSON\Object([
+    $schema = new JSON\Obj([
+        'db'         => new JSON\Obj([
             // Deprecated options.
             'dsn'      => new JSON\OptionalStr(),
             'hostname' => new JSON\OptionalStr(),
@@ -46,7 +46,7 @@ $container['configValidator'] = function ($container) {
             'username' => new JSON\Str(),
             'password' => new JSON\Str(),
         ]),
-        'migrations' => new JSON\Arr(new JSON\Object([
+        'migrations' => new JSON\Arr(new JSON\Obj([
             'namespace' => new JSON\Str(),
             'path'      => new JSON\Str(),
         ])),
