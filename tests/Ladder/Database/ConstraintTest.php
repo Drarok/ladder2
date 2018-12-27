@@ -2,11 +2,11 @@
 
 namespace Zerifas\LadderTests\Database;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 use Zerifas\Ladder\Database\Constraint;
 
-class ConstraintTest extends PHPUnit_Framework_TestCase
+class ConstraintTest extends TestCase
 {
     public function testConstraint()
     {

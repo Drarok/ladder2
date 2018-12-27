@@ -2,14 +2,14 @@
 
 namespace Zerifas\LadderTests\Database;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 use Zerifas\Ladder\Database\Table;
 
 /**
  * @requires PHP 5.6
  */
-class TableTest extends PHPUnit_Framework_TestCase
+class TableTest extends TestCase
 {
     protected function setUp()
     {
@@ -62,7 +62,7 @@ class TableTest extends PHPUnit_Framework_TestCase
 
     public function testImportInvalidFile()
     {
-        $this->setExpectedException('InvalidArgumentException', 'Invalid file extension: invalid');
+        $this->expectException('InvalidArgumentException', 'Invalid file extension: invalid');
         Table::factory('users')
             ->import(__DIR__ . '/fixtures/TableTest_testImportNO_SUCH_FILE.invalid')
         ;
@@ -179,7 +179,7 @@ class TableTest extends PHPUnit_Framework_TestCase
 
     public function testInsertFailure()
     {
-        $this->setExpectedException('Exception', 'Failed to insert?!');
+        $this->expectException('Exception', 'Failed to insert?!');
 
         $stmt = $this->getMockBuilder('PDOStatement')
             ->getMock()
@@ -249,7 +249,7 @@ class TableTest extends PHPUnit_Framework_TestCase
 
     public function testUpdateFailure()
     {
-        $this->setExpectedException('Exception', 'Failed to update?!');
+        $this->expectException('Exception', 'Failed to update?!');
 
         $stmt = $this->getMockBuilder('PDOStatement')
             ->getMock()
@@ -323,7 +323,7 @@ class TableTest extends PHPUnit_Framework_TestCase
 
     public function testDeleteFailure()
     {
-        $this->setExpectedException('Exception', 'Failed to delete?!');
+        $this->expectException('Exception', 'Failed to delete?!');
 
         $stmt = $this->getMockBuilder('PDOStatement')
             ->getMock()

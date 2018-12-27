@@ -2,11 +2,11 @@
 
 namespace Zerifas\LadderTests;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 use Zerifas\Ladder\Path;
 
-class BootstrapTest extends PHPUnit_Framework_TestCase
+class BootstrapTest extends TestCase
 {
     static $container = null;
 
