@@ -2,11 +2,11 @@
 
 namespace Zerifas\LadderTests\Database;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 use Zerifas\Ladder\Database\Column;
 
-class ColumnTest extends PHPUnit_Framework_TestCase
+class ColumnTest extends TestCase
 {
     public function testAutoIncrement()
     {

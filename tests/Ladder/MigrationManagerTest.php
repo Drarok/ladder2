@@ -2,7 +2,7 @@
 
 namespace Zerifas\LadderTests;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Pimple\Container;
 
 use Zerifas\Ladder\MigrationManager;
@@ -10,7 +10,7 @@ use Zerifas\Ladder\MigrationManager;
 /**
  * @requires PHP 5.6
  */
-class MigrationManagerTest extends PHPUnit_Framework_TestCase
+class MigrationManagerTest extends TestCase
 {
     protected $db;
     protected $stmt;
@@ -49,7 +49,7 @@ class MigrationManagerTest extends PHPUnit_Framework_TestCase
 
     public function testAddNamespaceFailsOnDuplicate()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         $this->manager->addNamespace('App\\Migration', __DIR__ . '/MigrationManagerTest/Migration');
     }
 
@@ -99,7 +99,7 @@ class MigrationManagerTest extends PHPUnit_Framework_TestCase
 
     public function testGetMigrationByIdFailsWithInvalidId()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException('InvalidArgumentException');
         $migration = $this->manager->getMigrationById('555555');
     }
 
@@ -281,7 +281,7 @@ class MigrationManagerTest extends PHPUnit_Framework_TestCase
 
     public function testEmptyPathsAreReported()
     {
-        $this->setExpectedException(
+        $this->expectException(
             'InvalidArgumentException',
             'Missing migrations path for namespace \'App\\Plugin\\Migration\'.'
         );
@@ -291,7 +291,7 @@ class MigrationManagerTest extends PHPUnit_Framework_TestCase
 
     public function testInvalidPathsAreReported()
     {
-        $this->setExpectedException(
+        $this->expectException(
             'InvalidArgumentException',
             'Invalid migrations path for namespace \'App\\Plugin\\Migration\': ' // Path deliberately omitted here
         );

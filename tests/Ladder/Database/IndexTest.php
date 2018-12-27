@@ -2,11 +2,11 @@
 
 namespace Zerifas\LadderTests\Database;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 use Zerifas\Ladder\Database\Index;
 
-class IndexTest extends PHPUnit_Framework_TestCase
+class IndexTest extends TestCase
 {
     public function testPrimary()
     {

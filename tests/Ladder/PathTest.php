@@ -2,11 +2,11 @@
 
 namespace Zerifas\LadderTests;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 use Zerifas\Ladder\Path;
 
-class PathTest extends PHPUnit_Framework_TestCase
+class PathTest extends TestCase
 {
     public function testRelative()
     {
