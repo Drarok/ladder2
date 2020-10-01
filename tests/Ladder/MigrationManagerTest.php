@@ -17,7 +17,7 @@ class MigrationManagerTest extends TestCase
 
     protected $manager;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
