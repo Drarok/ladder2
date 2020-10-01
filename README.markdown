@@ -198,6 +198,7 @@ class Migration1455898557 extends AbstractMigration
         $users
             ->dropColumn('notes')
             ->dropColumn('userGroup')
+            ->alter()
         ;
 
         Table::factory('posts')->drop();
