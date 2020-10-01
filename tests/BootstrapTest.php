@@ -8,9 +8,9 @@ use Zerifas\Ladder\Path;
 
 class BootstrapTest extends TestCase
 {
-    static $container = null;
+    private static $container = null;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         static::$container = require_once(Path::join(__DIR__, '..', 'bootstrap.php'));
     }
