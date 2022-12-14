@@ -33,7 +33,7 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Check coding standards
-      run: vendor/bin/phpcs --standard=PSR2 bin/ src/
+      run: composer run lint
 
     - name: Run unit tests
-      run: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+      run: composer run test:coverage
