@@ -33,6 +33,6 @@
     "scripts": {
         "lint": "phpcs --standard=PSR2 bin/ src/",
         "test": "phpunit -c phpunit.xml.dist",
-        "test:coverage": "phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml"
+        "test:coverage": "XDEBUG_MODE=coverage phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml"
     }
 }
