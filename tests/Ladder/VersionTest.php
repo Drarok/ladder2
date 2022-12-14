@@ -10,6 +10,9 @@ class VersionTest extends TestCase
 {
     public function testGetVersion()
     {
-        $this->assertRegExp('/^\d+\.\d+\.\d+-?(alpha|beta|RC-\d+)?$/', Version::getVersion());
+        $this->assertMatchesRegularExpression(
+            '/^\d+\.\d+\.\d+-?(alpha|beta|RC-\d+)?$/',
+            Version::getVersion()
+        );
     }
 }

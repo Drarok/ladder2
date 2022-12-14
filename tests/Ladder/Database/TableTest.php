@@ -6,9 +6,6 @@ use PHPUnit\Framework\TestCase;
 
 use Zerifas\Ladder\Database\Table;
 
-/**
- * @requires PHP 5.6
- */
 class TableTest extends TestCase
 {
     protected function setUp(): void
@@ -226,7 +223,7 @@ class TableTest extends TestCase
         $db = $this->getMockDb();
 
         $db->method('lastInsertId')
-            ->willReturn(42)
+            ->willReturn('42')
         ;
 
         $db

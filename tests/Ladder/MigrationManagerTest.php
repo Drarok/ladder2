@@ -307,7 +307,10 @@ class MigrationManagerTest extends TestCase
         ;
         $migration = $this->manager->getMigrationById('000001');
         $this->manager->applyMigration($migration);
-        $this->assertRegExp('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $migration->getAppliedAt());
+        $this->assertMatchesRegularExpression(
+            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/',
+            $migration->getAppliedAt()
+        );
     }
 
     public function testApplyMigrationWithInvalidMigration()
@@ -346,6 +349,9 @@ class MigrationManagerTest extends TestCase
                 throw $e;
             }
         }
-        $this->assertRegExp('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $migration->getAppliedAt());
+        $this->assertMatchesRegularExpression(
+            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/',
+            $migration->getAppliedAt()
+        );
     }
 }

@@ -26,8 +26,11 @@
         "zerifas/json": "^2.0"
     },
     "require-dev": {
-        "php-coveralls/php-coveralls": "^1.0",
-        "phpunit/phpunit": "^8.0",
-        "squizlabs/php_codesniffer": "^3.5"
+        "php-coveralls/php-coveralls": "^2.5",
+        "phpunit/phpunit": "^9.0",
+        "squizlabs/php_codesniffer": "3.*"
+    },
+    "scripts": {
+        "test": "phpunit --verbose -c phpunit.xml.dist"
     }
 }
