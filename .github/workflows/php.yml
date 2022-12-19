@@ -1,10 +1,7 @@
 name: Build
 
 on:
-  push:
-    branches: [ "develop" ]
-  pull_request:
-    branches: [ "develop" ]
+  - push
 
 permissions:
   contents: read
@@ -14,23 +11,23 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        php-versions: ['8.0', '8.1', '8.2']
+
+    name: Build on ${{ matrix.php-versions }}
+
     steps:
     - uses: actions/checkout@v3
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+    - uses: shivammathur/setup-php@v2
+       with:
+         php-version: ${{ matrix.php-versions }}
 
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
+    - name: Check PHP version
+       run: php -v
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-progress
+    - uses: "ramsey/composer-install@v2"
 
     - name: Check coding standards
       run: composer run lint
