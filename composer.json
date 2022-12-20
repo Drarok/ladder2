@@ -20,7 +20,7 @@
     "require": {
         "php": ">=8.0",
         "php-di/php-di": "v7.x-dev",
-        "symfony/console": "^6.2",
+        "symfony/console": "^6.0",
         "zerifas/json": "^3.0"
     },
     "require-dev": {
