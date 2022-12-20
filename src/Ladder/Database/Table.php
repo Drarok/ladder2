@@ -34,7 +34,7 @@ class Table
      */
     protected ?int $lastInsertId;
 
-    public function __construct(private readonly PDO $db, private readonly string $name)
+    public function __construct(private PDO $db, private string $name)
     {
         $this->clear();
     }

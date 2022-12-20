@@ -19,7 +19,7 @@ class MigrationManager
      */
     protected $paths = [];
 
-    public function __construct(protected readonly PDO $db)
+    public function __construct(protected PDO $db)
     {
     }
 

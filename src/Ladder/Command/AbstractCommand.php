@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractCommand extends Command
 {
-    public function __construct(protected readonly ContainerInterface $container, $name = null)
+    public function __construct(protected ContainerInterface $container, $name = null)
     {
         parent::__construct($name);
     }

@@ -21,7 +21,7 @@ abstract class AbstractMigration
 
     abstract public function rollback(array $data = null);
 
-    public function __construct(protected readonly PDO $db)
+    public function __construct(protected PDO $db)
     {
     }
 

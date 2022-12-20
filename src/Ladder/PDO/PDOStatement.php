@@ -8,7 +8,7 @@ use Psr\Container\ContainerInterface;
 
 class PDOStatement extends BasePDOStatement
 {
-    private function __construct(private readonly ContainerInterface $container)
+    private function __construct(private ContainerInterface $container)
     {
     }
 
