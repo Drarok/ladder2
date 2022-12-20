@@ -14,7 +14,7 @@ class Migration{{ id }} extends AbstractMigration
 
     public function apply()
     {
-        Table::factory('{{ table }}')
+        $this->table('{{ table }}')
             ->addColumn('id', 'autoincrement', ['null' => false, 'unsigned' => true])
             ->addIndex('PRIMARY', ['id'])
             ->create()
@@ -23,7 +23,7 @@ class Migration{{ id }} extends AbstractMigration
 
     public function rollback(array $data = null)
     {
-        Table::factory('{{ table }}')
+        $this->table('{{ table }}')
             ->drop()
         ;
     }

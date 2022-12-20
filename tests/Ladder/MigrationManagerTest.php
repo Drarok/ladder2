@@ -3,13 +3,9 @@
 namespace Zerifas\LadderTests;
 
 use PHPUnit\Framework\TestCase;
-use Pimple\Container;
 
 use Zerifas\Ladder\MigrationManager;
 
-/**
- * @requires PHP 5.6
- */
 class MigrationManagerTest extends TestCase
 {
     protected $db;
@@ -40,10 +36,7 @@ class MigrationManagerTest extends TestCase
             ->willReturn($this->stmt)
         ;
 
-        $container = new Container();
-        $container['db'] = $this->db;
-
-        $this->manager = new MigrationManager($container);
+        $this->manager = new MigrationManager($this->db);
         $this->manager->addNamespace('App\\Migration', __DIR__ . '/MigrationManagerTest/Migration');
     }
 

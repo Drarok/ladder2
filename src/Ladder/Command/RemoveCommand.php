@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use Zerifas\Ladder\Database\Table;
 use Zerifas\Ladder\Migration\System\AbstractSystemMigration;
+use Zerifas\Ladder\MigrationManager;
 
 class RemoveCommand extends AbstractCommand
 {
@@ -29,9 +30,7 @@ class RemoveCommand extends AbstractCommand
     {
         parent::execute($input, $output);
 
-        Table::setDefaultDb($this->db);
-
-        $manager = $this->migrationManager;
+        $manager = $this->container->get(MigrationManager::class);
 
         $source = $manager->getCurrentMigrationId();
         $migrationId = $input->getArgument('migration');
@@ -39,11 +38,11 @@ class RemoveCommand extends AbstractCommand
         $migration = $manager->getMigrationById($migrationId);
 
         if ($migration instanceof AbstractSystemMigration) {
-            throw new InvalidArgumentException('You cannot remove a Ladder system migration');
+            throw new InvalidArgumentException('You cannot remove a Ladder system migration.');
         }
 
         if (! $migration->isApplied()) {
-            throw new InvalidArgumentException('You cannot remote a migration that is not applied.');
+            throw new InvalidArgumentException('You cannot remove a migration that is not applied.');
         }
 
         $output->write(sprintf(
@@ -53,5 +52,7 @@ class RemoveCommand extends AbstractCommand
         ));
         $manager->rollbackMigration($migration);
         $output->writeln('<info>OK</info>');
+
+        return 0;
     }
 }

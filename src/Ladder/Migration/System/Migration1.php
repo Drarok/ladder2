@@ -13,7 +13,7 @@ class Migration1 extends AbstractSystemMigration
 
     public function apply()
     {
-        Table::factory('ladder:migrations')
+        $this->table('ladder:migrations')
             ->addColumn('id', 'integer', ['null' => false, 'unsigned' => true])
             ->addColumn('appliedAt', 'datetime', ['null' => false])
             ->addColumn('data', 'text')
@@ -24,7 +24,7 @@ class Migration1 extends AbstractSystemMigration
 
     public function rollback(array $data = null)
     {
-        Table::factory('ladder:migrations')
+        $this->table('ladder:migrations')
             ->drop()
         ;
     }

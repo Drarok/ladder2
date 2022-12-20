@@ -1,8 +1,13 @@
 #!/usr/bin/env php
 <?php
 
+use Symfony\Component\Console\Application;
+
 use Zerifas\Ladder\Path;
 
 $container = require_once __DIR__ . '/../bootstrap.php';
-$container['configPathname'] = Path::join(getcwd(), 'ladder.json');
-exit($container['app']->run());
+$container->set('configPathname', Path::join(getcwd(), 'ladder.json'));
+
+$app = $container
+    ->get(Application::class)
+    ->run();

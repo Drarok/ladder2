@@ -2,65 +2,18 @@
 
 namespace Zerifas\LadderTests\Database;
 
+use PDO;
+
 use PHPUnit\Framework\TestCase;
 
 use Zerifas\Ladder\Database\Table;
 
 class TableTest extends TestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
-    protected function getMockDb()
-    {
-        $db = $this->getMockBuilder('PDO')
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
-
-        Table::setDefaultDb($db);
-
-        return $db;
-    }
-
-    protected function getMockTableForImport()
-    {
-        $table = $this->getMockBuilder('Zerifas\\Ladder\\Database\\Table')
-            ->setConstructorArgs(['users'])
-            ->setMethods(['insert'])
-            ->getMock()
-        ;
-
-        $table
-            ->expects($this->exactly(2))
-            ->method('insert')
-            ->withConsecutive(
-                [
-                    $this->equalTo([
-                        'id'         => 1,
-                        'name'       => 'Alice',
-                        'occupation' => 'Developer',
-                    ]),
-                ],
-                [
-                    $this->equalTo([
-                        'id'         => 2,
-                        'name'       => 'Bob',
-                        'occupation' => null,
-                    ]),
-                ]
-            )
-        ;
-
-        return $table;
-    }
-
     public function testImportInvalidFile()
     {
         $this->expectException('InvalidArgumentException', 'Invalid file extension: invalid');
-        Table::factory('users')
+        $this->table('users')
             ->import(__DIR__ . '/fixtures/TableTest_testImportNO_SUCH_FILE.invalid')
         ;
     }
@@ -108,7 +61,7 @@ class TableTest extends TestCase
             ->with($sql)
         ;
 
-        Table::factory('users', $db)
+        $this->table('users', $db)
             ->addColumn('id', 'autoincrement', ['unsigned' => true])
             ->addColumn('groupId', 'integer', ['unsigned' => true])
             ->addColumn('name', 'varchar', ['limit' => 30, 'null' => false])
@@ -143,7 +96,7 @@ class TableTest extends TestCase
             ->with($sql)
         ;
 
-        Table::factory('users', $db)
+        $this->table('users', $db)
             ->dropColumn('name', 'varchar', ['limit' => 30, 'null' => false])
             ->alterColumn('occupation', 'varchar', ['limit' => 30])
             ->alterColumn('created', 'datetime', ['name' => 'createdAt'])
@@ -169,7 +122,7 @@ class TableTest extends TestCase
             ->with($sql)
         ;
 
-        Table::factory('users', $db)
+        $this->table('users', $db)
             ->drop()
         ;
     }
@@ -195,7 +148,7 @@ class TableTest extends TestCase
             ->willReturn($stmt)
         ;
 
-        Table::factory('users', $db)
+        $this->table('users', $db)
             ->insert([
                 'id'   => 1,
                 'name' => 'Alice',
@@ -233,7 +186,7 @@ class TableTest extends TestCase
             ->willReturn($stmt)
         ;
 
-        $lastId = Table::factory('users', $db)
+        $lastId = $this->table('users', $db)
             ->insert([
                 'id'   => 1,
                 'name' => 'Alice',
@@ -265,7 +218,7 @@ class TableTest extends TestCase
             ->willReturn($stmt)
         ;
 
-        Table::factory('users', $db)
+        $this->table('users', $db)
             ->update(
                 [
                     'id'   => 2,
@@ -305,7 +258,7 @@ class TableTest extends TestCase
             ->willReturn($stmt)
         ;
 
-        Table::factory('users', $db)
+        $this->table('users', $db)
             ->update(
                 [
                     'id'   => 2,
@@ -339,7 +292,7 @@ class TableTest extends TestCase
             ->willReturn($stmt)
         ;
 
-        Table::factory('users', $db)
+        $this->table('users', $db)
             ->delete([
                 'id' => 1,
             ])
@@ -371,10 +324,57 @@ class TableTest extends TestCase
             ->willReturn($stmt)
         ;
 
-        Table::factory('users', $db)
+        $this->table('users', $db)
             ->delete([
                 'id' => 1,
             ])
         ;
+    }
+
+    protected function getMockDb()
+    {
+        $db = $this->getMockBuilder('PDO')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
+        return $db;
+    }
+
+    protected function table(string $name, ?PDO $db = null)
+    {
+        return new Table($db ?? $this->getMockDb(), $name);
+    }
+
+    protected function getMockTableForImport()
+    {
+        $table = $this->getMockBuilder('Zerifas\\Ladder\\Database\\Table')
+            ->setConstructorArgs([$this->getMockDb(), 'users'])
+            ->setMethods(['insert'])
+            ->getMock()
+        ;
+
+        $table
+            ->expects($this->exactly(2))
+            ->method('insert')
+            ->withConsecutive(
+                [
+                    $this->equalTo([
+                        'id'         => 1,
+                        'name'       => 'Alice',
+                        'occupation' => 'Developer',
+                    ]),
+                ],
+                [
+                    $this->equalTo([
+                        'id'         => 2,
+                        'name'       => 'Bob',
+                        'occupation' => null,
+                    ]),
+                ]
+            )
+        ;
+
+        return $table;
     }
 }

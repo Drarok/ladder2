@@ -2,8 +2,6 @@
 
 namespace Zerifas\Ladder\Database;
 
-use Zerifas\Collections\Arr;
-
 class Column
 {
     protected $name;
@@ -37,7 +35,7 @@ class Column
     {
         $sql = '';
 
-        if ($newName = Arr::get($this->options, 'name')) {
+        if (($newName = $this->options['name'] ?? null)) {
             return sprintf(
                 'CHANGE COLUMN `%s` `%s` %s',
                 $this->name,
@@ -62,21 +60,21 @@ class Column
             $sql = strtoupper($this->type);
         }
 
-        if ($limit = Arr::get($this->options, 'limit')) {
+        if (($limit = $this->options['limit'] ?? null)) {
             $sql .= sprintf('(%s)', $limit);
-        } elseif ($options = Arr::get($this->options, 'options')) {
+        } elseif (($options = $this->options['options'] ?? null)) {
             $options = array_map(function ($option) {
                 return '\'' . str_replace('\'', '\\\'', $option) . '\'';
             }, $options);
             $sql .= sprintf('(%s)', implode(', ', $options));
         }
 
-        if (Arr::get($this->options, 'unsigned')) {
+        if ($this->options['unsigned'] ?? null) {
             $sql .= ' UNSIGNED';
         }
 
         // Auto-increment is implicity not null under MySQL, we make it explicit.
-        if (! Arr::get($this->options, 'null', true) || $this->type == 'autoincrement') {
+        if (! ($this->options['null'] ?? true) || $this->type == 'autoincrement') {
             $sql .= ' NOT NULL';
         }
 
@@ -85,16 +83,16 @@ class Column
         }
 
         if (array_key_exists('default', $this->options)) {
-            $default = Arr::get($this->options, 'default');
+            $default = $this->options['default'];
             if (! is_numeric($default)) {
                 $default = '\'' . str_replace('\'', '\\\'', $default) . '\'';
             }
             $sql .= sprintf(' DEFAULT %s', $default);
         }
 
-        if (Arr::get($this->options, 'first')) {
+        if ($this->options['first'] ?? null) {
             $sql .= ' FIRST';
-        } elseif ($after = Arr::get($this->options, 'after')) {
+        } elseif (($after = $this->options['after'] ?? null)) {
             $sql .= sprintf(' AFTER `%s`', $after);
         }
 

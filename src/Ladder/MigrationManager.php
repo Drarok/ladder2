@@ -2,23 +2,16 @@
 
 namespace Zerifas\Ladder;
 
+use PDO;
+
 use DirectoryIterator;
 use Exception;
 use InvalidArgumentException;
-
-use Pimple\Container;
 
 use Zerifas\Ladder\Migration\AbstractMigration;
 
 class MigrationManager
 {
-    /**
-     * Container.
-     *
-     * @var Container
-     */
-    protected $container;
-
     /**
      * Array of paths to get migrations from.
      *
@@ -26,26 +19,8 @@ class MigrationManager
      */
     protected $paths = [];
 
-    /**
-     * Constructor.
-     *
-     * @param Container $container Container.
-     */
-    public function __construct(Container $container)
+    public function __construct(protected readonly PDO $db)
     {
-        $this->container = $container;
-    }
-
-    /**
-     * Magic getter, passes control to the container.
-     *
-     * @param string $key Dependency key.
-     *
-     * @return mixed
-     */
-    public function __get($key)
-    {
-        return $this->container[$key];
     }
 
     /**
@@ -368,7 +343,7 @@ class MigrationManager
                 require_once $fileInfo->getPathname();
 
                 $class = $namespace . '\\' . $fileInfo->getBasename('.php');
-                $migration = new $class($this->container);
+                $migration = new $class($this->db);
 
                 if (array_key_exists($migration->getId(), $appliedMigrations)) {
                     $migration->setAppliedAt($appliedMigrations[$migration->getId()]);

@@ -3,8 +3,7 @@
 ## What is it?
 
 Ladder started life many years ago as an extremely simple database migration system.
-It's grown over time to include a host of features, and had a ground-up rewrite to keep
-it modern (and remove use of the `mysql` extension). It's written for PHP >= 7.2, and
+It's grown over time to include a host of features. It's written for PHP >= 8.0, and
 supports the popular MySQL database server via PDO.
 
 ## What would I use this for?
@@ -27,7 +26,7 @@ method; Dropping a column instead of adding it, etc.
 * Adding, dropping, and altering columns
 * Adding and dropping indexes/constraints
 * Data operations: insert/update/delete
-* Storing metadata when applying a migration, and using it during roll back
+* Storing metadata when applying a migration, and using it during rollback
 
 ## How do I use it?
 
@@ -129,7 +128,6 @@ Here's an example that does _way_ too much for a single Migration, but should co
 
 namespace YourAppNamespace\Migration;
 
-use Zerifas\Ladder\Database\Table;
 use Zerifas\Ladder\Migration\AbstractMigration;
 
 class Migration1455898557 extends AbstractMigration
@@ -143,7 +141,7 @@ class Migration1455898557 extends AbstractMigration
     {
         // We are assuming that the `users` table already exists for this example,
         // and we are creating the `posts` table, and creating a user.
-        $posts = Table::factory('posts');
+        $posts = $this->table('posts');
 
         // addColumn($name, $type, array $options = [])
         // Possible keys and values for `$options`:
@@ -167,7 +165,7 @@ class Migration1455898557 extends AbstractMigration
         ;
 
         // Create a user, and get its unique id.
-        $users = Table::factory('users');
+        $users = $this->table('users');
         $users
             ->addColumn('userGroup', 'integer', ['null' => false, 'default' => 0, 'first' => true])
             ->addColumn('notes', 'text', ['after' => 'userGroup'])
@@ -187,11 +185,11 @@ class Migration1455898557 extends AbstractMigration
 
     public function rollback(array $data = null)
     {
-        $users = Table::factory('users');
+        $users = $this->table('users');
 
-        if (is_array($data) && array_key_exists('userId', $data)) {
+        if (($id = $data['userId'] ?? null)) {
             $users->delete([
-                'id' => $data['userId'],
+                'id' => $id,
             ]);
         }
 
@@ -201,7 +199,7 @@ class Migration1455898557 extends AbstractMigration
             ->alter()
         ;
 
-        Table::factory('posts')->drop();
+        $this->table('posts')->drop();
     }
 }
 ```

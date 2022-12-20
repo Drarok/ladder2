@@ -82,11 +82,11 @@ class Constraint
 
         $optionString = '';
 
-        if ($deleteAction = Arr::get($this->options, 'delete')) {
+        if (($deleteAction = $this->options['delete'] ?? null)) {
             $optionString .= 'ON DELETE ' . $deleteAction . ' ';
         }
 
-        if ($updateAction = Arr::get($this->options, 'update')) {
+        if (($updateAction = $this->options['update'] ?? null)) {
             $optionString .= 'ON UPDATE ' . $updateAction . ' ';
         }
 

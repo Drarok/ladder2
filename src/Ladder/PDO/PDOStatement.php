@@ -4,22 +4,18 @@ namespace Zerifas\Ladder\PDO;
 
 use PDOStatement as BasePDOStatement;
 
-use Pimple\Container;
+use Psr\Container\ContainerInterface;
 
 class PDOStatement extends BasePDOStatement
 {
-    /**
-     * Constructor is required, but must not be public.
-     */
-    private function __construct(Container $container)
+    private function __construct(private readonly ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
-    public function execute($params = null)
+    public function execute(?array $params = null): bool
     {
-        if ($this->container->offsetExists('output')) {
-            $this->container['output']->writeln(sprintf(
+        if ($this->container->has('output')) {
+            $this->container->get('output')->writeln(sprintf(
                 PHP_EOL . '<info>stmt: %s</info>',
                 $this->queryString
             ));

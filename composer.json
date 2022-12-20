@@ -18,12 +18,10 @@
         "bin/ladder"
     ],
     "require": {
-        "php": ">=7.0",
-        "pimple/pimple": "^3.0",
-        "symfony/event-dispatcher": "^2.8",
-        "symfony/console": "^2.8",
-        "zerifas/collections": "^1.1",
-        "zerifas/json": "^2.0"
+        "php": ">=8.0",
+        "php-di/php-di": "v7.x-dev",
+        "symfony/console": "^6.2",
+        "zerifas/json": "^3.0"
     },
     "require-dev": {
         "php-coveralls/php-coveralls": "^2.5",
