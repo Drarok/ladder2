@@ -24,7 +24,7 @@ class InitCommand extends AbstractCommand
 
         $verbose = $input->getOption('verbose');
 
-        $config = $this->container['config']->db;
+        $config = $this->container->get('config')->db;
         $dsn = sprintf(
             'mysql:host=%s;charset=%s;',
             $config->host,

@@ -1,0 +1,41 @@
+name: Build
+
+on:
+  - push
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-versions: ['8.0', '8.1', '8.2']
+
+    name: Build on ${{ matrix.php-versions }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+
+      - name: Check PHP version
+        run: php -v
+
+      - uses: "ramsey/composer-install@v2"
+
+      - name: Check coding standards
+        run: composer run lint
+
+      - name: Run unit tests
+        run: composer run test:coverage
+
+      - name: Coverage report
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: vendor/bin/php-coveralls --coverage_clover=build/logs/clover.xml -v

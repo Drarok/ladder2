@@ -1,6 +1,6 @@
 <?php
 
-use Pimple\Container;
+use Psr\Container\ContainerInterface;
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\ConsoleEvents;
@@ -28,20 +28,15 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/../../autoload.php';
 }
 
-$container = new Container();
+$container = new \DI\Container();
 
-$container['rootPath'] = __DIR__;
+$container->set('rootPath', __DIR__);
 
-$container['configValidator'] = function ($container) {
+$container->set('configValidator', function (ContainerInterface $container) {
     $schema = new JSON\Obj([
-        'db'         => new JSON\Obj([
-            // Deprecated options.
-            'dsn'      => new JSON\OptionalStr(),
-            'hostname' => new JSON\OptionalStr(),
-
-            // Current options - optional as we transition to them.
-            'host'     => new JSON\OptionalStr(),
-            'dbname'   => new JSON\OptionalStr(),
+        'db' => new JSON\Obj([
+            'host'     => new JSON\Str(),
+            'dbname'   => new JSON\Str(),
             'charset'  => new JSON\OptionalStr('utf8'),
             'username' => new JSON\Str(),
             'password' => new JSON\Str(),
@@ -53,72 +48,25 @@ $container['configValidator'] = function ($container) {
     ]);
 
     return new JSON\Validator($schema);
-};
+});
 
-$container['config'] = function ($container) {
-    $configPathname = $container['configPathname'];
+$container->set('config', function (ContainerInterface $container) {
+    $configPathname = $container->get('configPathname');
 
     if (! is_file($configPathname)) {
         throw new Exception('No such file: ' . $configPathname);
     }
 
-    $validator = $container['configValidator'];
+    $validator = $container->get('configValidator');
     if (! $validator->isValid(file_get_contents($configPathname))) {
         throw new Exception('Invalid config: ' . implode(', ', $validator->getErrors()));
     }
 
-    $config = $validator->getDocument();
+    return $validator->getDocument();
+});
 
-    // Handle deprecated options, and put warnings into an array which will be displayed
-    // to users using the event dispatcher (else we can't access the OutputInterface).
-    $warnings = [];
-
-    if ($config->db->dsn !== null) {
-        $warnings[] = 'Warning: db.dsn config option is deprecated.';
-
-        // Define defaults.
-        $defaults = [
-            'host'    => '',
-            'dbname'  => '',
-            'charset' => 'utf8',
-        ];
-
-        // Decompose the dsn option into its component parts.
-        if (! preg_match_all('/(\w+)=(.*?)(?:;|$)/', $config->db->dsn, $matches, PREG_SET_ORDER)) {
-            throw new InvalidArgumentException('Failed to parse deprecated \'dsn\' config option');
-        }
-
-        // Set defaults from the parsed data.
-        foreach ($matches as $match) {
-            $key = $match[1];
-            $value = $match[2];
-
-            $defaults[$key] = $value;
-        }
-
-        // Merge the config in to allow users to "win" over our parsing.
-        $options = array_merge($defaults, (array) $config->db);
-
-        // Remove deprecated option, replace db config.
-        unset($options['dsn']);
-        $config->db = (object) $options;
-    }
-
-    if ($config->db->hostname !== null) {
-        $warnings[] = 'Warning: db.hostname config option is deprecated.';
-        if ($config->db->host === null) {
-            $config->db->host = $config->db->hostname;
-            unset($config->db->hostname);
-        }
-    }
-
-    $container['warnings'] = $warnings;
-
-    return $config;
-};
-
-$container['db'] = function ($container) {
-    $config = $container['config']->db;
+$container->set(PDO::class, function (ContainerInterface $container) {
+    $config = $container->get('config')->db;
 
     $dsn = sprintf(
         'mysql:host=%s;dbname=%s;charset=%s;',
@@ -139,47 +87,27 @@ $container['db'] = function ($container) {
             LoggingPDO::ATTR_STATEMENT_CLASS    => ['Zerifas\\Ladder\\PDO\\PDOStatement', [$container]],
         ]
     );
-};
+});
 
-$container['migrationManager'] = function ($container) {
-    $manager = new MigrationManager($container);
+$container->set(MigrationManager::class, function (ContainerInterface $container) {
+    $manager = new MigrationManager($container->get(PDO::class));
 
     // Always add in the Ladder migrations path.
     $manager->addNamespace(
         'Zerifas\\Ladder\\Migration\\System',
-        Path::join($container['rootPath'], 'src/Ladder/Migration/System')
+        Path::join($container->get('rootPath'), 'src/Ladder/Migration/System')
     );
 
     // Loop over configured namespaces and add those.
-    foreach ($container['config']->migrations as $migrations) {
+    foreach ($container->get('config')->migrations as $migrations) {
         $manager->addNamespace($migrations->namespace, $migrations->path);
     }
 
     return $manager;
-};
+});
 
-$container['dispatcher'] = function ($container) {
-    $dispatcher = new EventDispatcher();
-
-    $dispatcher->addListener(ConsoleEvents::COMMAND, function (ConsoleCommandEvent $event) use ($container) {
-        // Make sure config is loaded.
-        $config = $container['config'];
-
-        $output = $event->getOutput();
-
-        if (($warnings = $container['warnings'])) {
-            foreach ($warnings as $warning) {
-                $output->writeln(sprintf('<comment>%s</comment>', $warning));
-            }
-        }
-    });
-
-    return $dispatcher;
-};
-
-$container['app'] = function ($container) {
+$container->set(Application::class, function (ContainerInterface $container) {
     $app = new Application('Ladder', Version::getVersion());
-    $app->setDispatcher($container['dispatcher']);
 
     // Add global option for showing SQL.
     $input = $app->getDefinition();
@@ -200,6 +128,6 @@ $container['app'] = function ($container) {
     ]);
 
     return $app;
-};
+});
 
 return $container;

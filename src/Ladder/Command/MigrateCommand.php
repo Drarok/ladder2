@@ -37,9 +37,7 @@ class MigrateCommand extends AbstractCommand
     {
         parent::execute($input, $output);
 
-        Table::setDefaultDb($this->db);
-
-        $manager = $this->migrationManager;
+        $manager = $this->container->get(MigrationManager::class);
 
         $source = $manager->getCurrentMigrationId();
         $destination = $input->getArgument('migration');
@@ -63,11 +61,13 @@ class MigrateCommand extends AbstractCommand
         }
 
         $this->$method($output, $source, $destination);
+
+        return 0;
     }
 
     protected function apply(OutputInterface $output, $source, $destination)
     {
-        $manager = $this->migrationManager;
+        $manager = $this->container->get(MigrationManager::class);
 
         if (! $manager->hasAvailableMigrations()) {
             $output->writeln('<info>Already up-to-date.</info>');
@@ -106,7 +106,7 @@ class MigrateCommand extends AbstractCommand
 
     protected function rollback(OutputInterface $output, $source, $destination)
     {
-        $manager = $this->migrationManager;
+        $manager = $this->container->get(MigrationManager::class);
 
         if (! $manager->hasAppliedMigrations()) {
             $output->writeln('<info>Already up-to-date.</info>');

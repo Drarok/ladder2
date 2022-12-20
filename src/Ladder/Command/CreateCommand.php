@@ -34,7 +34,7 @@ class CreateCommand extends AbstractCommand
     {
         parent::execute($input, $output);
 
-        $config = $this->config;
+        $config = $this->container->get('config');
 
         if (count($config->migrations) > 1) {
             $namespace = $input->getArgument('namespace');
@@ -71,6 +71,8 @@ class CreateCommand extends AbstractCommand
             '<info>%s</info>',
             $pathname
         ));
+
+        return 0;
     }
 
     protected function createTemplateFile($name, $namespace, $path)
@@ -95,7 +97,7 @@ class CreateCommand extends AbstractCommand
                 $id,
                 $name,
             ],
-            file_get_contents(Path::join($this->rootPath, 'views', 'migration.template'))
+            file_get_contents(Path::join($this->container->get('rootPath'), 'views', 'migration.template'))
         );
 
         $pathname = Path::join($path, 'Migration' . $id . '.php');

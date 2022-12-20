@@ -17,7 +17,7 @@ class BootstrapTest extends TestCase
 
     public function testConfigValidator()
     {
-        $validator = static::$container['configValidator'];
+        $validator = static::$container->get('configValidator');
         $this->assertInstanceOf(\Zerifas\JSON\Validator::class, $validator);
     }
 }

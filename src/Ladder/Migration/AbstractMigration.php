@@ -2,17 +2,12 @@
 
 namespace Zerifas\Ladder\Migration;
 
-use Pimple\Container;
+use PDO;
+
+use Zerifas\Ladder\Database\Table;
 
 abstract class AbstractMigration
 {
-    /**
-     * Dependency container;
-     *
-     * @var Container
-     */
-    protected $container;
-
     /**
      * Cached appliedAt value.
      *
@@ -26,9 +21,8 @@ abstract class AbstractMigration
 
     abstract public function rollback(array $data = null);
 
-    public function __construct(Container $container)
+    public function __construct(protected PDO $db)
     {
-        $this->container = $container;
     }
 
     public function getId()
@@ -36,11 +30,6 @@ abstract class AbstractMigration
         $class = get_class($this);
         $migrationPos = strrpos($class, 'Migration');
         return substr($class, $migrationPos + 9);
-    }
-
-    public function __get($key)
-    {
-        return $this->container[$key];
     }
 
     public function setAppliedAt($appliedAt)
@@ -57,5 +46,10 @@ abstract class AbstractMigration
     public function isApplied()
     {
         return (bool) $this->appliedAt;
+    }
+
+    protected function table(string $name): Table
+    {
+        return new Table($this->db, $name);
     }
 }

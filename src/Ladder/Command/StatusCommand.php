@@ -2,6 +2,8 @@
 
 namespace Zerifas\Ladder\Command;
 
+use Zerifas\Ladder\MigrationManager;
+
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -24,14 +26,11 @@ class StatusCommand extends AbstractCommand
 
         $output->writeln('<comment>Status</comment>');
 
-        $manager = $this->migrationManager;
+        $manager = $this->container->get(MigrationManager::class);
 
         if (! $verbose && ! $manager->hasAvailableMigrations()) {
             $output->writeln('    <fg=green>Database is up-to-date.</fg=green>');
-            return;
-        }
-
-        if ($verbose) {
+        } elseif ($verbose) {
             $allMigrations = $manager->getAllMigrations();
 
             foreach ($allMigrations as $id => $migration) {
@@ -53,5 +52,7 @@ class StatusCommand extends AbstractCommand
                 ));
             }
         }
+
+        return 0;
     }
 }

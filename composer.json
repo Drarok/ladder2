@@ -18,16 +18,19 @@
         "bin/ladder"
     ],
     "require": {
-        "php": ">=7.0",
-        "pimple/pimple": "^3.0",
-        "symfony/event-dispatcher": "^2.8",
-        "symfony/console": "^2.8",
-        "zerifas/collections": "^1.1",
-        "zerifas/json": "^2.0"
+        "php": ">=8.0",
+        "php-di/php-di": "v7.x-dev",
+        "symfony/console": "^6.0",
+        "zerifas/json": "^3.0"
     },
     "require-dev": {
-        "php-coveralls/php-coveralls": "^1.0",
-        "phpunit/phpunit": "^8.0",
-        "squizlabs/php_codesniffer": "^3.5"
+        "php-coveralls/php-coveralls": "^2.5",
+        "phpunit/phpunit": "^9.0",
+        "squizlabs/php_codesniffer": "3.*"
+    },
+    "scripts": {
+        "lint": "phpcs --standard=PSR2 bin/ src/",
+        "test": "phpunit -c phpunit.xml.dist",
+        "test:coverage": "XDEBUG_MODE=coverage phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml"
     }
 }

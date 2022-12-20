@@ -11,6 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use Zerifas\Ladder\Database\Table;
 use Zerifas\Ladder\Migration\System\AbstractSystemMigration;
+use Zerifas\Ladder\MigrationManager;
 
 class ReapplyCommand extends AbstractCommand
 {
@@ -31,9 +32,7 @@ class ReapplyCommand extends AbstractCommand
     {
         parent::execute($input, $output);
 
-        Table::setDefaultDb($this->db);
-
-        $manager = $this->migrationManager;
+        $manager = $this->container->get(MigrationManager::class);
 
         $source = $manager->getCurrentMigrationId();
         $migrationId = $input->getArgument('migration');
@@ -65,5 +64,7 @@ class ReapplyCommand extends AbstractCommand
         ));
         $manager->applyMigration($migration);
         $output->writeln('<info>OK</info>');
+
+        return 0;
     }
 }

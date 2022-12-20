@@ -45,7 +45,7 @@ class Index
 
         if ($this->name == 'PRIMARY') {
             $sql .= 'PRIMARY KEY (';
-        } elseif (Arr::get($this->options, 'unique')) {
+        } elseif ($this->options['unique'] ?? null) {
             $sql .= sprintf('UNIQUE KEY `%s` (', $this->name);
         } else {
             $sql .= sprintf('KEY `%s` (', $this->name);

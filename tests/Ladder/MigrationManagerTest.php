@@ -3,13 +3,9 @@
 namespace Zerifas\LadderTests;
 
 use PHPUnit\Framework\TestCase;
-use Pimple\Container;
 
 use Zerifas\Ladder\MigrationManager;
 
-/**
- * @requires PHP 5.6
- */
 class MigrationManagerTest extends TestCase
 {
     protected $db;
@@ -40,10 +36,7 @@ class MigrationManagerTest extends TestCase
             ->willReturn($this->stmt)
         ;
 
-        $container = new Container();
-        $container['db'] = $this->db;
-
-        $this->manager = new MigrationManager($container);
+        $this->manager = new MigrationManager($this->db);
         $this->manager->addNamespace('App\\Migration', __DIR__ . '/MigrationManagerTest/Migration');
     }
 
@@ -307,7 +300,10 @@ class MigrationManagerTest extends TestCase
         ;
         $migration = $this->manager->getMigrationById('000001');
         $this->manager->applyMigration($migration);
-        $this->assertRegExp('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $migration->getAppliedAt());
+        $this->assertMatchesRegularExpression(
+            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/',
+            $migration->getAppliedAt()
+        );
     }
 
     public function testApplyMigrationWithInvalidMigration()
@@ -346,6 +342,9 @@ class MigrationManagerTest extends TestCase
                 throw $e;
             }
         }
-        $this->assertRegExp('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $migration->getAppliedAt());
+        $this->assertMatchesRegularExpression(
+            '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/',
+            $migration->getAppliedAt()
+        );
     }
 }
