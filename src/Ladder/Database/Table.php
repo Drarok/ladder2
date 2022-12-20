@@ -252,7 +252,6 @@ class Table
         );
 
         if (!($stmt = $this->db->prepare($sql))) {
-            var_dump($stmt);
             throw new \Exception("Failed to prepare SQL: $sql");
         }
 

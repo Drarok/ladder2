@@ -127,6 +127,25 @@ class TableTest extends TestCase
         ;
     }
 
+    public function testPrepareFailure()
+    {
+        $this->expectException('Exception', 'Failed to prepare SQL:');
+
+        $db = $this->getMockDb();
+        $db
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn(false)
+        ;
+
+        $this->table('users', $db)
+            ->insert([
+                'id'   => 1,
+                'name' => 'Alice',
+            ])
+        ;
+    }
+
     public function testInsertFailure()
     {
         $this->expectException('Exception', 'Failed to insert?!');

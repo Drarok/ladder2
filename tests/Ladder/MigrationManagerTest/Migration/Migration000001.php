@@ -14,7 +14,9 @@ class Migration000001 extends AbstractMigration
 
     public function apply()
     {
-        $this->db->query('SELECT 1');
+        $this->table('example')
+            ->create()
+        ;
 
         return [
             'userId' => 151,
@@ -27,6 +29,8 @@ class Migration000001 extends AbstractMigration
             throw new \InvalidArgumentException('Missing data key: userId');
         }
 
-        $this->db->query('SELECT 1');
+        $this->table('example')
+            ->drop()
+        ;
     }
 }
